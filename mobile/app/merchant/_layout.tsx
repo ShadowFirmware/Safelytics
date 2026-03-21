@@ -48,6 +48,15 @@ export default function MerchantLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="terminal"
+        options={{
+          title: 'Terminal',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="bar-chart-outline" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
