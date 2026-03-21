@@ -1,0 +1,66 @@
+[package]
+name    = "safelytics-backend"
+version = "0.1.0"
+edition = "2021"
+description = "API PagaLoop: pagos QR y Stellar"
+readme = "README.md"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[[bin]]
+name = "safelytics"
+path = "src/main.rs"
+
+[dependencies]
+# --- Web framework ---
+axum        = { version = "0.7", features = ["macros"] }
+tokio       = { version = "1",   features = ["full"] }
+tower       = "0.4"
+tower-http  = { version = "0.5", features = ["cors", "trace"] }
+
+# --- HTTP client (Horizon) ---
+reqwest = { version = "0.12", features = ["json"] }
+
+# --- Serialization ---
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# --- Auth ---
+jsonwebtoken = "9"
+bcrypt       = "0.15"
+
+# --- Database ---
+sqlx = { version = "0.7", features = [
+  "runtime-tokio-rustls", "mysql", "migrate",
+  "uuid", "chrono",
+] }
+
+# --- Utilities ---
+uuid    = { version = "1", features = ["v4", "serde"] }
+chrono  = { version = "0.4", features = ["serde"] }
+dotenvy = "0.15"
+
+# --- Logging ---
+tracing            = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+# --- Error handling ---
+anyhow    = "1"
+thiserror = "1"
+
+# --- Stellar ---
+stellar-xdr   = { version = "25.0.1", features = ["curr", "std"] }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+rand          = "0.8"
+sha2          = "0.10"
+base64        = "0.22"
+
+# --- Crypto (key encryption at rest) ---
+aes-gcm       = "0.10"
+hex           = "0.4"
+data-encoding = "2"     # base32 for Stellar strkey
+
+# --- QR codes ---
+qrcode = "0.13"
+image  = { version = "0.24", features = ["png"] }

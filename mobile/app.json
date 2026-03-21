@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "PagaLoop",
+    "slug": "pagaloop",
+    "version": "1.0.0",
+    "scheme": "safelytics",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.safelytics.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "PagaLoop necesita la cámara para escanear el QR de pago."
+      }
+    },
+    "android": {
+      "package": "com.safelytics.app",
+      "permissions": [
+        "android.permission.CAMERA"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "PagaLoop necesita la cámara para escanear el QR de pago."
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
