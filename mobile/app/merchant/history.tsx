@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
@@ -8,6 +9,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors } from '../../src/theme/colors';
+import { fmtMXN } from '../../src/utils/format';
 
 type Tx = Awaited<ReturnType<typeof api.getHistory>>[number];
 
@@ -50,20 +52,20 @@ export default function MerchantHistory() {
         ListHeaderComponent={
           <View style={styles.todayCard}>
             <Text style={styles.todayLabel}>Cobrado hoy</Text>
-            <Text style={styles.todayAmount}>MXN ${todayTotal.toFixed(2)}</Text>
+            <Text style={styles.todayAmount}>MXN ${fmtMXN(todayTotal)}</Text>
           </View>
         }
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>💰</Text>
+            <Ionicons name="cash-outline" size={48} color="rgba(255,255,255,0.2)" style={{ marginBottom: 10 }} />
             <Text style={styles.emptyText}>Sin cobros aún</Text>
           </View>
         }
         renderItem={({ item: tx }) => (
           <View style={styles.card}>
-            <Text style={styles.arrow}>↓</Text>
+            <Ionicons name="arrow-down-outline" size={18} color={Colors.success} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.amount}>MXN ${tx.amount_mxn.toFixed(2)}</Text>
+              <Text style={styles.amount}>MXN ${fmtMXN(tx.amount_mxn)}</Text>
               {tx.stellar_tx_hash && (
                 <Text style={styles.hash} numberOfLines={1}>
                   {tx.stellar_tx_hash.slice(0, 16)}…
@@ -91,12 +93,10 @@ const styles = StyleSheet.create({
   todayLabel:  { color: 'rgba(255,255,255,0.5)', fontSize: 12, marginBottom: 4 },
   todayAmount: { fontSize: 24, fontWeight: '800', color: Colors.success },
   card:        { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', borderRadius: 14, padding: 14, gap: 10 },
-  arrow:       { fontSize: 18, color: Colors.success, fontWeight: '800' },
   amount:      { fontSize: 15, fontWeight: '700', color: Colors.white },
   hash:        { fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' },
   status:      { fontSize: 11, fontWeight: '600' },
   date:        { fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
   empty:       { alignItems: 'center', marginTop: 60 },
-  emptyIcon:   { fontSize: 48, marginBottom: 10 },
   emptyText:   { color: 'rgba(255,255,255,0.5)', fontSize: 16 },
 });

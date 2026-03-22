@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
@@ -9,6 +10,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors, Gradients } from '../../src/theme/colors';
+import { fmtMXN } from '../../src/utils/format';
 
 type Balance = Awaited<ReturnType<typeof api.getMerchantBalance>>;
 type Tx      = Awaited<ReturnType<typeof api.getHistory>>[number];
@@ -47,7 +49,7 @@ export default function MerchantHome() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Mi negocio</Text>
         <TouchableOpacity onPress={async () => { await logout(); router.replace('/login'); }}>
-          <Text style={styles.logoutIcon}>⎋</Text>
+          <Ionicons name="log-out-outline" size={22} color="rgba(255,255,255,0.5)" />
         </TouchableOpacity>
       </View>
 
@@ -65,7 +67,7 @@ export default function MerchantHome() {
                 <LinearGradient colors={Gradients.purple} style={styles.balanceCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                   <Text style={styles.balanceLabel}>Saldo MXNe</Text>
                   <Text style={styles.balanceAmount}>
-                    {balance ? `MXN $${balance.mxne_balance.toFixed(2)}` : '—'}
+                    {balance ? `MXN $${fmtMXN(balance.mxne_balance)}` : '—'}
                   </Text>
                   <Text style={styles.balanceSub}>Red Stellar · casi inmediato</Text>
                 </LinearGradient>
@@ -82,15 +84,15 @@ export default function MerchantHome() {
             }
             ListEmptyComponent={
               <View style={styles.empty}>
-                <Text style={styles.emptyIcon}>💰</Text>
+                <Ionicons name="cash-outline" size={48} color="rgba(255,255,255,0.2)" style={{ marginBottom: 10 }} />
                 <Text style={styles.emptyText}>Genera tu primer cobro</Text>
               </View>
             }
             renderItem={({ item: tx }) => (
               <View style={styles.txCard}>
-                <Text style={styles.txArrow}>↓</Text>
+                <Ionicons name="arrow-down-outline" size={20} color={Colors.success} />
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.txAmount}>MXN ${tx.amount_mxn.toFixed(2)}</Text>
+                  <Text style={styles.txAmount}>MXN ${fmtMXN(tx.amount_mxn)}</Text>
                   <Text style={styles.txDate}>{tx.created_at.slice(0, 10)}</Text>
                 </View>
                 <Text style={{ color: tx.status === 'failed' ? Colors.error : Colors.success, fontWeight: '600', fontSize: 12 }}>
@@ -109,7 +111,6 @@ const styles = StyleSheet.create({
   center:       { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.black },
   header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 },
   headerTitle:  { fontSize: 20, fontWeight: '800', color: Colors.white },
-  logoutIcon:   { fontSize: 22, color: 'rgba(255,255,255,0.5)' },
 
   balanceCard:  { borderRadius: 24, padding: 28,
                   shadowColor: Colors.successDark, shadowOpacity: 0.35, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 6, marginBottom: 14 },
@@ -124,11 +125,9 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.white, marginBottom: 4 },
 
   txCard:  { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', borderRadius: 14, padding: 14, gap: 12 },
-  txArrow: { fontSize: 20, color: Colors.success, fontWeight: '700' },
   txAmount:{ fontSize: 16, fontWeight: '700', color: Colors.white },
   txDate:  { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
 
   empty:     { alignItems: 'center', marginTop: 40 },
-  emptyIcon: { fontSize: 48, marginBottom: 10 },
   emptyText: { color: 'rgba(255,255,255,0.5)', fontSize: 16 },
 });

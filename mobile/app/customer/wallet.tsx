@@ -16,6 +16,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors, Gradients } from '../../src/theme/colors';
+import { fmtMXN } from '../../src/utils/format';
 
 export default function CustomerWalletScreen() {
   const { token } = useAuth();
@@ -94,7 +95,7 @@ export default function CustomerWalletScreen() {
           {loading && balance === null ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.balance}>{balance?.toFixed(2) ?? '—'}</Text>
+            <Text style={styles.balance}>{balance != null ? fmtMXN(balance) : '—'}</Text>
           )}
 
             <TouchableOpacity style={styles.btnSecondary} onPress={refresh} disabled={loading}>

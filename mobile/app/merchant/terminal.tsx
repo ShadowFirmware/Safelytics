@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import * as SecureStore from 'expo-secure-store';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -218,7 +219,7 @@ export default function Terminal() {
 
           {groups.length === 0 ? (
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>📋</Text>
+              <Ionicons name="clipboard-outline" size={48} color="rgba(255,255,255,0.2)" style={{ marginBottom: 10 }} />
               <Text style={styles.emptyText}>Sin registros aún{'\n'}Agrega tu primer corte</Text>
             </View>
           ) : (
@@ -379,7 +380,6 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 16,
   },
-  emptyIcon: { fontSize: 48, marginBottom: 10 },
   emptyText: {
     color: 'rgba(255,255,255,0.5)',
     fontSize: 16,

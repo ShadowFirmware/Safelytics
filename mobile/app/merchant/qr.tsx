@@ -10,6 +10,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors, Gradients } from '../../src/theme/colors';
+import { fmtMXN } from '../../src/utils/format';
 
 const QR_SCHEME = 'safelytics://pay/';
 
@@ -54,7 +55,7 @@ export default function GenerateQrScreen() {
     return (
       <SafeAreaView style={styles.safe}>
         <View style={styles.qrContainer}>
-          <Text style={styles.qrAmount}>MXN ${mxn.toFixed(2)}</Text>
+          <Text style={styles.qrAmount}>MXN ${fmtMXN(mxn)}</Text>
           {desc ? <Text style={styles.qrDesc}>{desc}</Text> : null}
 
           <View style={styles.qrBox}>

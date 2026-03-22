@@ -9,6 +9,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors, Gradients } from '../../src/theme/colors';
+import { fmtMXN } from '../../src/utils/format';
 
 type Intent = Awaited<ReturnType<typeof api.getPaymentInfo>>;
 type Quote = Awaited<ReturnType<typeof api.getPaymentQuote>>;
@@ -81,7 +82,7 @@ export default function ConfirmScreen() {
           <Text style={styles.checkIcon}>✓</Text>
         </LinearGradient>
         <Text style={styles.successTitle}>¡Pago listo!</Text>
-        <Text style={styles.successAmount}>MXN ${result.amount_mxn.toFixed(2)}</Text>
+        <Text style={styles.successAmount}>MXN ${fmtMXN(result.amount_mxn)}</Text>
         <Text style={styles.successSub}>El comercio recibió tu pago en pesos.</Text>
 
         <View style={styles.hashBox}>
@@ -108,7 +109,7 @@ export default function ConfirmScreen() {
       {/* Amount — hero */}
       <View style={styles.amountCard}>
         <Text style={styles.currencyLabel}>MXN</Text>
-        <Text style={styles.amount}>${intent.amount_mxn.toFixed(2)}</Text>
+        <Text style={styles.amount}>${fmtMXN(intent.amount_mxn)}</Text>
         {intent.description && <Text style={styles.description}>{intent.description}</Text>}
       </View>
 
@@ -128,15 +129,15 @@ export default function ConfirmScreen() {
           <Text style={styles.quoteTitle}>Resumen PagaLoop</Text>
           <View style={styles.quoteRow}>
             <Text style={styles.quoteK}>Tú pagas</Text>
-            <Text style={styles.quoteV}>${quote.customer_pays_mxn.toFixed(2)} MXN</Text>
+            <Text style={styles.quoteV}>${fmtMXN(quote.customer_pays_mxn)} MXN</Text>
           </View>
           <View style={styles.quoteRow}>
             <Text style={styles.quoteK}>Comisión plataforma</Text>
-            <Text style={styles.quoteV}>${quote.platform_fee_mxn.toFixed(2)} ({quote.platform_fee_bps / 100}%)</Text>
+            <Text style={styles.quoteV}>${fmtMXN(quote.platform_fee_mxn)} ({quote.platform_fee_bps / 100}%)</Text>
           </View>
           <View style={styles.quoteRow}>
             <Text style={styles.quoteK}>Comercio recibe (estimado)</Text>
-            <Text style={styles.quoteV}>${quote.merchant_receives_mxn.toFixed(2)} MXN</Text>
+            <Text style={styles.quoteV}>${fmtMXN(quote.merchant_receives_mxn)} MXN</Text>
           </View>
           <View style={styles.quoteRow}>
             <Text style={styles.quoteK}>Equiv. referencia USDC</Text>

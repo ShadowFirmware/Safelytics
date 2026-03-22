@@ -8,6 +8,7 @@ import { useAuth } from '../../src/context/AuthContext';
 import { api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors } from '../../src/theme/colors';
+import { fmtMXN } from '../../src/utils/format';
 
 type Tx = Awaited<ReturnType<typeof api.getHistory>>[number];
 
@@ -60,7 +61,7 @@ export default function CustomerHistory() {
           <View style={styles.card}>
             <View style={[styles.dot, { backgroundColor: STATUS_COLOR[tx.status] ?? Colors.warning }]} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.amount}>MXN ${tx.amount_mxn.toFixed(2)}</Text>
+              <Text style={styles.amount}>MXN ${fmtMXN(tx.amount_mxn)}</Text>
               <Text style={styles.date}>{tx.created_at.slice(0, 10)}</Text>
             </View>
             <Text style={[styles.status, { color: STATUS_COLOR[tx.status] ?? Colors.warning }]}>
