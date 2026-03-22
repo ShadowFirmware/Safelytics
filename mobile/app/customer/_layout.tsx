@@ -39,6 +39,9 @@ export default function CustomerLayout() {
           ),
         }}
       />
+      {/* Pantallas accesibles desde Cartera, no visibles en el tab bar */}
+      <Tabs.Screen name="deposit" options={{ href: null, title: 'Recargar' }} />
+      <Tabs.Screen name="bank-transfer" options={{ href: null, title: 'Transferir' }} />
     </Tabs>
   );
 }

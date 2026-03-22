@@ -62,6 +62,39 @@ pub struct Payment {
     pub created_at: Option<NaiveDateTime>,
 }
 
+// ── Deposit requests ──────────────────────────────────────────────────────────
+
+#[allow(dead_code)]
+#[derive(Debug, FromRow)]
+pub struct DepositRequest {
+    pub id: String,
+    pub user_id: String,
+    pub amount_stroops: i64,
+    pub openpay_id: Option<String>,
+    pub clabe: Option<String>,
+    pub bank_name: Option<String>,
+    pub status: String,
+    pub stellar_tx_hash: Option<String>,
+    pub created_at: Option<NaiveDateTime>,
+}
+
+// ── Bank transfers ────────────────────────────────────────────────────────────
+
+#[allow(dead_code)]
+#[derive(Debug, FromRow)]
+pub struct BankTransfer {
+    pub id: String,
+    pub user_id: String,
+    pub amount_stroops: i64,
+    pub destination_clabe: String,
+    pub holder_name: String,
+    pub description: Option<String>,
+    pub openpay_id: Option<String>,
+    pub stellar_tx_hash: Option<String>,
+    pub status: String,
+    pub created_at: Option<NaiveDateTime>,
+}
+
 // ── Shared response DTOs ──────────────────────────────────────────────────────
 
 #[derive(Serialize)]

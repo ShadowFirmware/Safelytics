@@ -21,6 +21,13 @@ pub struct Config {
     pub reference_mxn_per_usdc: f64,
     /// Cuenta Stellar `G...` que recibe la comisión en MXNe (split on-chain). Si vacío, no hay split (todo al comercio).
     pub platform_fee_receiver: Option<String>,
+    // ── OpenPay (BBVA) ────────────────────────────────────────────────────────
+    /// ID de comercio en OpenPay (panel.openpay.mx).
+    pub openpay_merchant_id: Option<String>,
+    /// Llave privada de OpenPay (sk_...).
+    pub openpay_private_key: Option<String>,
+    /// true = sandbox (pruebas), false = producción.
+    pub openpay_sandbox: bool,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -75,6 +82,16 @@ impl Config {
             platform_fee_receiver: std::env::var("PLATFORM_FEE_RECEIVER")
                 .ok()
                 .filter(|s| !s.is_empty()),
+            openpay_merchant_id: std::env::var("OPENPAY_MERCHANT_ID")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            openpay_private_key: std::env::var("OPENPAY_PRIVATE_KEY")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            openpay_sandbox: std::env::var("OPENPAY_SANDBOX")
+                .unwrap_or_else(|_| "true".into())
+                .to_lowercase()
+                != "false",
             stellar_network,
             encryption_key,
         })

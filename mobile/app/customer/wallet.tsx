@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
@@ -19,7 +19,8 @@ import { Colors, Gradients } from '../../src/theme/colors';
 import { fmtMXN } from '../../src/utils/format';
 
 export default function CustomerWalletScreen() {
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
+  const router = useRouter();
   const [balance, setBalance] = useState<number | null>(null);
   const [pub, setPub] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -65,6 +66,20 @@ export default function CustomerWalletScreen() {
     }
   };
 
+  const onLogout = () => {
+    Alert.alert('Cerrar sesión', '¿Seguro que quieres salir?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Cerrar sesión',
+        style: 'destructive',
+        onPress: async () => {
+          await logout();
+          router.replace('/');
+        },
+      },
+    ]);
+  };
+
   const onFaucet = async () => {
     if (!token) return;
     const n = parseFloat(faucetAmount.replace(',', '.'));
@@ -89,6 +104,26 @@ export default function CustomerWalletScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>Mi cartera</Text>
+
+        {/* Acciones rápidas */}
+        <View style={styles.actionsRow}>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => router.push('/customer/deposit')}
+          >
+            <LinearGradient colors={Gradients.purple} style={styles.actionGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              <Text style={styles.actionText}>+ Recargar</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => router.push('/customer/bank-transfer')}
+          >
+            <LinearGradient colors={Gradients.blue} style={styles.actionGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              <Text style={styles.actionText}>→ Transferir</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.card}>
           <Text style={styles.label}>Saldo MXNe</Text>
@@ -118,6 +153,12 @@ export default function CustomerWalletScreen() {
             </LinearGradient>
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.btnLogout} onPress={onLogout}>
+          <LinearGradient colors={['#7f1d1d', '#991b1b']} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <Text style={styles.btnText}>Cerrar sesión</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -137,7 +178,12 @@ const styles = StyleSheet.create({
   btnText:{ color: Colors.white, fontWeight: '700', fontSize: 15 },
   btnSecondary: { alignItems: 'center', paddingVertical: 8 },
   btnSecondaryText: { color: Colors.primary, fontWeight: '600' },
+  actionsRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
+  actionBtn: { flex: 1, borderRadius: 12, overflow: 'hidden' },
+  actionGradient: { padding: 14, alignItems: 'center' },
+  actionText: { color: '#fff', fontWeight: '700', fontSize: 14 },
   row:    { gap: 10 },
   input:  { backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 8, color: Colors.white },
   btnSmall: { borderRadius: 12, overflow: 'hidden' },
+  btnLogout: { borderRadius: 12, overflow: 'hidden', marginTop: 24 },
 });

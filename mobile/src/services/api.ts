@@ -216,4 +216,73 @@ export const api = {
       { method: 'POST', body: JSON.stringify(body) },
       token,
     ),
+
+  // ── Recargas SPEI (OpenPay) ─────────────────────────────────────────────────
+
+  /** Genera una CLABE SPEI de OpenPay para que el usuario deposite. */
+  createDeposit: (amount_mxn: number, token: string) =>
+    request<{
+      deposit_id: string;
+      clabe: string;
+      bank_name: string;
+      amount_mxn: number;
+      status: string;
+      instructions: string;
+    }>('/api/wallet/deposit/create', { method: 'POST', body: JSON.stringify({ amount_mxn }) }, token),
+
+  /** Consulta el estado de una recarga por su ID. */
+  getDepositStatus: (deposit_id: string, token: string) =>
+    request<{
+      deposit_id: string;
+      amount_mxn: number;
+      clabe: string | null;
+      bank_name: string | null;
+      status: string;
+      stellar_tx_hash: string | null;
+      created_at: string;
+    }>(`/api/wallet/deposit/${deposit_id}`, {}, token),
+
+  /** Lista las recargas del usuario. */
+  listDeposits: (token: string) =>
+    request<Array<{
+      deposit_id: string;
+      amount_mxn: number;
+      status: string;
+      stellar_tx_hash: string | null;
+      created_at: string;
+    }>>('/api/wallet/deposits', {}, token),
+
+  // ── Transferencias bancarias salientes ──────────────────────────────────────
+
+  /** Deduce MXNe del wallet y envía SPEI a la CLABE destino via OpenPay. */
+  bankTransfer: (
+    body: {
+      destination_clabe: string;
+      holder_name: string;
+      amount_mxn: number;
+      description?: string;
+    },
+    token: string,
+  ) =>
+    request<{
+      transfer_id: string;
+      openpay_id: string | null;
+      stellar_tx_hash: string;
+      amount_mxn: number;
+      destination_clabe: string;
+      status: string;
+    }>('/api/wallet/transfer/bank', { method: 'POST', body: JSON.stringify(body) }, token),
+
+  /** Lista las transferencias bancarias salientes del usuario. */
+  listTransfers: (token: string) =>
+    request<Array<{
+      transfer_id: string;
+      amount_mxn: number;
+      destination_clabe: string;
+      holder_name: string;
+      status: string;
+      stellar_tx_hash: string | null;
+      description: string | null;
+      created_at: string;
+    }>>('/api/wallet/transfers', {}, token),
 };

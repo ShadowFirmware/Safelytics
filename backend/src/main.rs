@@ -3,6 +3,7 @@ mod config;
 mod db;
 mod error;
 mod models;
+mod openpay;
 mod routes;
 mod stellar;
 
@@ -80,7 +81,9 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/api/auth/merchant/login", post(routes::auth::login_merchant))
         // QR info is public so the customer app can display the payment details
         .route("/api/qr/:payment_id", get(routes::qr::get_payment_info))
-        .route("/api/qr/:payment_id/quote", get(routes::quote::payment_quote));
+        .route("/api/qr/:payment_id/quote", get(routes::quote::payment_quote))
+        // Webhook OpenPay (público — OpenPay no envía JWT)
+        .route("/api/wallet/deposit/webhook", post(routes::deposit::deposit_webhook));
 
     // Protected routes (require Bearer token)
     let protected = Router::new()
@@ -98,6 +101,13 @@ pub fn build_router(state: Arc<AppState>) -> Router {
         .route("/api/wallet/balance", get(routes::wallet::wallet_balance))
         .route("/api/wallet/bootstrap-testnet", post(routes::wallet::bootstrap_testnet))
         .route("/api/wallet/faucet-mxne", post(routes::wallet::faucet_mxne))
+        // Recargas SPEI (OpenPay)
+        .route("/api/wallet/deposit/create", post(routes::deposit::create_deposit))
+        .route("/api/wallet/deposit/:id", get(routes::deposit::deposit_status))
+        .route("/api/wallet/deposits", get(routes::deposit::list_deposits))
+        // Transferencias bancarias salientes
+        .route("/api/wallet/transfer/bank", post(routes::transfer::bank_transfer))
+        .route("/api/wallet/transfers", get(routes::transfer::list_transfers))
         .layer(middleware::from_fn_with_state(state.clone(), auth::middleware::require_auth));
 
     Router::new()
