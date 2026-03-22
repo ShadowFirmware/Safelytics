@@ -48,7 +48,7 @@ export default function LoginScreen() {
         <View style={styles.logoBox}>
           <Text style={styles.logoIcon}>⚡</Text>
         </View>
-        <Text style={styles.title}>PagaLoop</Text>
+        <Text style={styles.title}>Bríjex</Text>
         <Text style={styles.subtitle}>Pagos con QR para tu negocio · inicia sesión</Text>
       </View>
 

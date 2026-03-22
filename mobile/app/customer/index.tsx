@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { TouchableOpacity, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../../src/context/AuthContext';
@@ -11,43 +12,47 @@ export default function CustomerHome() {
     <SafeAreaView style={styles.safe}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>PagaLoop</Text>
+        <Text style={styles.headerTitle}>Pagar</Text>
         <TouchableOpacity onPress={async () => { await logout(); router.replace('/login'); }}>
-          <Text style={styles.logoutIcon}>⎋</Text>
+          <Ionicons name="log-out-outline" size={24} color={Colors.textLight} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.content}>
-        {/* Big scan button */}
-        <TouchableOpacity
-          style={styles.scanBtn}
-          onPress={() => {
-            log.action('ClienteInicio', 'Abrir escáner QR');
-            router.push('/scan');
-          }}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.scanIcon}>📷</Text>
-          <Text style={styles.scanTitle}>Escanear y Pagar</Text>
-          <Text style={styles.scanSub}>Apunta al QR del comercio</Text>
-        </TouchableOpacity>
+        {/* Botón centrado */}
+        <View style={styles.center}>
+          <TouchableOpacity
+            style={styles.scanBtn}
+            onPress={() => {
+              log.action('ClienteInicio', 'Abrir escáner QR');
+              router.push('/scan');
+            }}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="qr-code-outline" size={64} color={Colors.white} style={styles.scanIcon} />
+            <Text style={styles.scanTitle}>Escanear y Pagar</Text>
+            <Text style={styles.scanSub}>Apunta al QR del comercio</Text>
+          </TouchableOpacity>
+        </View>
 
-        {/* Info cards */}
-        <View style={styles.cards}>
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>⚡</Text>
-            <Text style={styles.cardLabel}>Pago instantáneo</Text>
-            <Text style={styles.cardValue}>~3 segundos</Text>
+        {/* Info — una sola card ancha */}
+        <View style={styles.infoCard}>
+          <View style={styles.infoCol}>
+            <Ionicons name="flash-outline" size={20} color={Colors.primary} />
+            <Text style={styles.infoValue}>3s</Text>
+            <Text style={styles.infoLabel} numberOfLines={1}>Instantáneo</Text>
           </View>
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>🔗</Text>
-            <Text style={styles.cardLabel}>Red</Text>
-            <Text style={styles.cardValue}>Stellar</Text>
+          <View style={styles.infoDivider} />
+          <View style={styles.infoCol}>
+            <Ionicons name="link-outline" size={20} color={Colors.primary} />
+            <Text style={styles.infoValue}>Stellar</Text>
+            <Text style={styles.infoLabel}>Red</Text>
           </View>
-          <View style={styles.card}>
-            <Text style={styles.cardIcon}>💵</Text>
-            <Text style={styles.cardLabel}>Moneda</Text>
-            <Text style={styles.cardValue}>MXNe</Text>
+          <View style={styles.infoDivider} />
+          <View style={styles.infoCol}>
+            <Ionicons name="cash-outline" size={20} color={Colors.primary} />
+            <Text style={styles.infoValue}>MXNe</Text>
+            <Text style={styles.infoLabel}>Moneda</Text>
           </View>
         </View>
       </View>
@@ -56,14 +61,14 @@ export default function CustomerHome() {
 }
 
 const styles = StyleSheet.create({
-  safe:       { flex: 1, backgroundColor: Colors.surface },
-  header:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
+  safe:        { flex: 1, backgroundColor: Colors.surface },
+  header:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 8 },
   headerTitle: { fontSize: 20, fontWeight: '800', color: Colors.textDark },
-  logoutIcon: { fontSize: 22, color: Colors.textLight },
 
-  content:    { flex: 1, padding: 20 },
+  content:     { flex: 1, padding: 20, justifyContent: 'space-between' },
+  center:      { flex: 1, justifyContent: 'center' },
 
-  scanBtn:    {
+  scanBtn:     {
     backgroundColor: Colors.primary,
     borderRadius: 24,
     paddingVertical: 48,
@@ -73,15 +78,14 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     shadowOffset: { width: 0, height: 8 },
     elevation: 8,
-    marginBottom: 24,
   },
-  scanIcon:   { fontSize: 60, marginBottom: 12 },
-  scanTitle:  { color: Colors.white, fontSize: 22, fontWeight: '800', marginBottom: 4 },
-  scanSub:    { color: 'rgba(255,255,255,0.75)', fontSize: 14 },
+  scanIcon:    { marginBottom: 12 },
+  scanTitle:   { color: Colors.white, fontSize: 22, fontWeight: '800', marginBottom: 4 },
+  scanSub:     { color: 'rgba(255,255,255,0.75)', fontSize: 14 },
 
-  cards:      { flexDirection: 'row', gap: 10 },
-  card:       { flex: 1, backgroundColor: Colors.white, borderRadius: 16, padding: 16, alignItems: 'center' },
-  cardIcon:   { fontSize: 24, marginBottom: 6 },
-  cardLabel:  { fontSize: 11, color: Colors.textLight, marginBottom: 2 },
-  cardValue:  { fontSize: 13, fontWeight: '700', color: Colors.textDark },
+  infoCard:    { flexDirection: 'row', backgroundColor: Colors.white, borderRadius: 16, paddingVertical: 16 },
+  infoCol:     { width: '33.33%', alignItems: 'center', justifyContent: 'center', gap: 4 },
+  infoDivider: { width: 1, alignSelf: 'stretch', backgroundColor: Colors.border },
+  infoValue:   { fontSize: 14, fontWeight: '700', color: Colors.textDark, textAlign: 'center' },
+  infoLabel:   { fontSize: 11, color: Colors.textLight, textAlign: 'center' },
 });

@@ -87,30 +87,19 @@ export default function CustomerWalletScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>Mi cartera</Text>
-        <Text style={styles.sub}>
-          Stellar testnet · MXNe de prueba. Primero «Preparar testnet», luego «Recibir MXNe».
-        </Text>
 
         <View style={styles.card}>
           <Text style={styles.label}>Saldo MXNe</Text>
           {loading && balance === null ? (
             <ActivityIndicator color={Colors.primary} />
           ) : (
-            <Text style={styles.balance}>{balance?.toFixed(4) ?? '—'}</Text>
+            <Text style={styles.balance}>{balance?.toFixed(2) ?? '—'}</Text>
           )}
-          {pub ? (
-            <Text style={styles.pk} selectable numberOfLines={2}>
-              {pub}
-            </Text>
-          ) : null}
+
           <TouchableOpacity style={styles.btnSecondary} onPress={refresh} disabled={loading}>
             <Text style={styles.btnSecondaryText}>Actualizar saldo</Text>
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity style={styles.btn} onPress={onBootstrap} disabled={loading}>
-          <Text style={styles.btnText}>1 · Preparar testnet (XLM + trustline)</Text>
-        </TouchableOpacity>
 
         <View style={styles.row}>
           <TextInput
@@ -122,7 +111,7 @@ export default function CustomerWalletScreen() {
             onChangeText={setFaucetAmount}
           />
           <TouchableOpacity style={styles.btnSmall} onPress={onFaucet} disabled={loading}>
-            <Text style={styles.btnText}>2 · Recibir MXNe</Text>
+            <Text style={styles.btnText}>Recibir MXNe</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
