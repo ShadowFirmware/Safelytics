@@ -5,10 +5,11 @@ import {
   Platform, ScrollView, StyleSheet, Text,
   TextInput, TouchableOpacity,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../src/context/AuthContext';
 import { ApiError, api } from '../src/services/api';
 import { log } from '../src/utils/logger';
-import { Colors } from '../src/theme/colors';
+import { Colors, Gradients } from '../src/theme/colors';
 
 export default function RegisterScreen() {
   const { role } = useLocalSearchParams<{ role: 'user' | 'merchant' }>();
@@ -59,7 +60,7 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder={isMerchant ? 'Nombre del negocio' : 'Tu nombre'}
-          placeholderTextColor={Colors.textLight}
+          placeholderTextColor="rgba(255,255,255,0.35)"
           autoCapitalize="words"
           value={nameOrBiz}
           onChangeText={setNameOrBiz}
@@ -67,7 +68,7 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Teléfono (+5255...)"
-          placeholderTextColor={Colors.textLight}
+          placeholderTextColor="rgba(255,255,255,0.35)"
           keyboardType="phone-pad"
           autoCapitalize="none"
           value={phone}
@@ -76,7 +77,7 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
-          placeholderTextColor={Colors.textLight}
+          placeholderTextColor="rgba(255,255,255,0.35)"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
@@ -84,7 +85,7 @@ export default function RegisterScreen() {
         <TextInput
           style={styles.input}
           placeholder="Confirmar contraseña"
-          placeholderTextColor={Colors.textLight}
+          placeholderTextColor="rgba(255,255,255,0.35)"
           secureTextEntry
           value={confirm}
           onChangeText={setConfirm}
@@ -92,9 +93,11 @@ export default function RegisterScreen() {
         />
 
         <TouchableOpacity style={styles.btn} onPress={handleRegister} disabled={loading}>
-          {loading
-            ? <ActivityIndicator color={Colors.white} />
-            : <Text style={styles.btnText}>Crear cuenta</Text>}
+          <LinearGradient colors={Gradients.blue} style={{ padding: 16, alignItems: 'center' }} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            {loading
+              ? <ActivityIndicator color={Colors.white} />
+              : <Text style={styles.btnText}>Crear cuenta</Text>}
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => router.back()}>
@@ -106,10 +109,10 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, backgroundColor: Colors.surface, padding: 24, justifyContent: 'center' },
-  title:     { fontSize: 26, fontWeight: '800', color: Colors.textDark, marginBottom: 32, textAlign: 'center' },
-  input:     { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border, borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 14, color: Colors.textDark },
-  btn:       { backgroundColor: Colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8, marginBottom: 16 },
+  container: { flexGrow: 1, backgroundColor: Colors.black, padding: 24, justifyContent: 'center' },
+  title:     { fontSize: 26, fontWeight: '800', color: Colors.white, marginBottom: 32, textAlign: 'center' },
+  input:     { backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 14, color: Colors.white },
+  btn:       { borderRadius: 12, overflow: 'hidden', marginTop: 8, marginBottom: 16 },
   btnText:   { color: Colors.white, fontWeight: '700', fontSize: 16 },
   link:      { textAlign: 'center', color: Colors.primary, fontWeight: '600' },
 });

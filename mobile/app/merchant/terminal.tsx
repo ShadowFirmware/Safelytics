@@ -6,25 +6,24 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { Colors } from '../../src/theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Colors, Gradients } from '../../src/theme/colors';
 
 const STORE_KEY = 'safelytics_sales_entries';
 
 interface SalesEntry {
   id: string;
-  timestamp: string; // ISO string
+  timestamp: string;
   totalSales: number;
   cashAmount: number;
 }
-
-// ─── helpers ────────────────────────────────────────────────────────────────
 
 function fmt(n: number) {
   return `$${n.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`;
@@ -44,10 +43,14 @@ function hourLabel(iso: string) {
   return new Date(iso).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
 }
 
-// ─── group entries: month → day → list ──────────────────────────────────────
-
-interface DayGroup   { dayKey: string; entries: SalesEntry[] }
-interface MonthGroup { monthKey: string; days: DayGroup[] }
+interface DayGroup {
+  dayKey: string;
+  entries: SalesEntry[];
+}
+interface MonthGroup {
+  monthKey: string;
+  days: DayGroup[];
+}
 
 function groupEntries(entries: SalesEntry[]): MonthGroup[] {
   const sorted = [...entries].sort(
@@ -74,8 +77,6 @@ function groupEntries(entries: SalesEntry[]): MonthGroup[] {
   return months;
 }
 
-// ─── storage ────────────────────────────────────────────────────────────────
-
 async function loadEntries(): Promise<SalesEntry[]> {
   try {
     const raw = await SecureStore.getItemAsync(STORE_KEY);
@@ -89,13 +90,11 @@ async function saveEntries(entries: SalesEntry[]) {
   await SecureStore.setItemAsync(STORE_KEY, JSON.stringify(entries));
 }
 
-// ─── component ──────────────────────────────────────────────────────────────
-
 export default function Terminal() {
-  const [entries,    setEntries]    = useState<SalesEntry[]>([]);
+  const [entries, setEntries] = useState<SalesEntry[]>([]);
   const [salesInput, setSalesInput] = useState('');
-  const [cashInput,  setCashInput]  = useState('');
-  const [saving,     setSaving]     = useState(false);
+  const [cashInput, setCashInput] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -147,124 +146,117 @@ export default function Terminal() {
   };
 
   const groups = groupEntries(entries);
-
-  // summary totals
-  const totalVentas  = entries.reduce((s, e) => s + e.totalSales, 0);
+  const totalVentas = entries.reduce((s, e) => s + e.totalSales, 0);
   const totalEfectivo = entries.reduce((s, e) => s + e.cashAmount, 0);
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        {/* ── header terminal ── */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>▌ TERMINAL DE VENTAS</Text>
-          <Text style={styles.headerSub}>
-            {new Date().toLocaleDateString('es-MX', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
-          </Text>
-        </View>
-
-        {/* ── summary banner ── */}
-        <View style={styles.summaryRow}>
-          <View style={styles.summaryCard}>
-            <Text style={styles.summaryLabel}>Total ventas</Text>
-            <Text style={styles.summaryValue}>{fmt(totalVentas)}</Text>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Terminal de ventas</Text>
+            <Text style={styles.headerSub}>
+              {new Date().toLocaleDateString('es-MX', {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </Text>
           </View>
-          <View style={[styles.summaryCard, { borderColor: Colors.warning + '66' }]}>
-            <Text style={styles.summaryLabel}>Total efectivo</Text>
-            <Text style={[styles.summaryValue, { color: Colors.warning }]}>{fmt(totalEfectivo)}</Text>
-          </View>
-        </View>
 
-        {/* ── input form ── */}
-        <View style={styles.form}>
-          <View style={styles.inputRow}>
-            <View style={styles.inputWrap}>
-              <Text style={styles.inputLabel}>VENTAS TOTALES (MXN)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="0.00"
-                placeholderTextColor={Colors.textLight}
-                keyboardType="decimal-pad"
-                value={salesInput}
-                onChangeText={setSalesInput}
-              />
+          <View style={styles.summaryRow}>
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>Total ventas</Text>
+              <Text style={styles.summaryValue}>{fmt(totalVentas)}</Text>
             </View>
-            <View style={styles.inputWrap}>
-              <Text style={styles.inputLabel}>EFECTIVO (MXN)</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="0.00"
-                placeholderTextColor={Colors.textLight}
-                keyboardType="decimal-pad"
-                value={cashInput}
-                onChangeText={setCashInput}
-              />
+            <View style={styles.summaryCard}>
+              <Text style={styles.summaryLabel}>Total efectivo</Text>
+              <Text style={[styles.summaryValue, styles.summaryValueCash]}>{fmt(totalEfectivo)}</Text>
             </View>
           </View>
-          <Pressable
-            style={[styles.btn, saving && { opacity: 0.6 }]}
-            onPress={handleAdd}
-            disabled={saving}
-          >
-            <Text style={styles.btnText}>{saving ? 'Guardando…' : '+ REGISTRAR'}</Text>
-          </Pressable>
-        </View>
 
-        {/* ── list ── */}
-        <ScrollView contentContainerStyle={styles.list}>
-          {groups.length === 0 && (
+          <View style={styles.formCard}>
+            <Text style={styles.formTitle}>Registrar corte</Text>
+            <Text style={styles.fieldLabel}>Ventas totales (MXN)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="0.00"
+              placeholderTextColor="rgba(255,255,255,0.35)"
+              keyboardType="decimal-pad"
+              value={salesInput}
+              onChangeText={setSalesInput}
+            />
+            <Text style={styles.fieldLabel}>Efectivo (MXN)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="0.00"
+              placeholderTextColor="rgba(255,255,255,0.35)"
+              keyboardType="decimal-pad"
+              value={cashInput}
+              onChangeText={setCashInput}
+            />
+            <Pressable
+              style={[styles.btn, saving && styles.btnDisabled]}
+              onPress={handleAdd}
+              disabled={saving}
+            >
+              <LinearGradient colors={Gradients.purple} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+                <Text style={styles.btnText}>{saving ? 'Guardando…' : 'Registrar'}</Text>
+              </LinearGradient>
+            </Pressable>
+          </View>
+
+          <Text style={styles.sectionTitle}>Historial</Text>
+
+          {groups.length === 0 ? (
             <View style={styles.empty}>
-              <Text style={styles.emptyIcon}>🖥️</Text>
+              <Text style={styles.emptyIcon}>📋</Text>
               <Text style={styles.emptyText}>Sin registros aún{'\n'}Agrega tu primer corte</Text>
             </View>
-          )}
+          ) : (
+            groups.map((month) => (
+              <View key={month.monthKey}>
+                <Text style={styles.monthLabel}>{month.monthKey}</Text>
+                {month.days.map((day) => {
+                  const dayVentas = day.entries.reduce((s, e) => s + e.totalSales, 0);
+                  const dayEfectivo = day.entries.reduce((s, e) => s + e.cashAmount, 0);
 
-          {groups.map((month) => (
-            <View key={month.monthKey}>
-              {/* month header */}
-              <View style={styles.monthHeader}>
-                <Text style={styles.monthText}>{month.monthKey.toUpperCase()}</Text>
-              </View>
-
-              {month.days.map((day) => {
-                const dayVentas   = day.entries.reduce((s, e) => s + e.totalSales, 0);
-                const dayEfectivo = day.entries.reduce((s, e) => s + e.cashAmount, 0);
-
-                return (
-                  <View key={day.dayKey} style={styles.dayBlock}>
-                    {/* day header */}
-                    <View style={styles.dayHeader}>
-                      <Text style={styles.dayText}>{day.dayKey.toUpperCase()}</Text>
-                      <View style={styles.dayTotals}>
-                        <Text style={styles.dayTotal}>Ventas {fmt(dayVentas)}</Text>
-                        <Text style={[styles.dayTotal, { color: Colors.warning }]}>
-                          Efectivo {fmt(dayEfectivo)}
-                        </Text>
-                      </View>
-                    </View>
-
-                    {/* hour entries */}
-                    {day.entries.map((entry) => (
-                      <Pressable
-                        key={entry.id}
-                        style={styles.entryRow}
-                        onLongPress={() => handleDelete(entry.id)}
-                      >
-                        <Text style={styles.entryHour}>{hourLabel(entry.timestamp)}</Text>
-                        <View style={styles.entryValues}>
-                          <Text style={styles.entryVentas}>{fmt(entry.totalSales)}</Text>
-                          <Text style={styles.entryCash}>{fmt(entry.cashAmount)} ef.</Text>
+                  return (
+                    <View key={day.dayKey} style={styles.dayCard}>
+                      <View style={styles.dayHeader}>
+                        <Text style={styles.dayTitle}>{day.dayKey}</Text>
+                        <View style={styles.dayTotals}>
+                          <Text style={styles.dayTotalLine}>Ventas {fmt(dayVentas)}</Text>
+                          <Text style={styles.dayTotalCash}>Efectivo {fmt(dayEfectivo)}</Text>
                         </View>
-                      </Pressable>
-                    ))}
-                  </View>
-                );
-              })}
-            </View>
-          ))}
+                      </View>
+                      {day.entries.map((entry) => (
+                        <Pressable
+                          key={entry.id}
+                          style={styles.entryRow}
+                          onLongPress={() => handleDelete(entry.id)}
+                        >
+                          <Text style={styles.entryHour}>{hourLabel(entry.timestamp)}</Text>
+                          <View style={styles.entryValues}>
+                            <Text style={styles.entryVentas}>{fmt(entry.totalSales)}</Text>
+                            <Text style={styles.entryCash}>{fmt(entry.cashAmount)} ef.</Text>
+                          </View>
+                        </Pressable>
+                      ))}
+                    </View>
+                  );
+                })}
+              </View>
+            ))
+          )}
 
           <Text style={styles.hint}>Mantén presionado un registro para eliminarlo</Text>
         </ScrollView>
@@ -274,51 +266,198 @@ export default function Terminal() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.textDark },
+  safe: { flex: 1, backgroundColor: Colors.black },
+  flex: { flex: 1 },
+  scrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
 
-  // header
-  header:      { backgroundColor: Colors.textDark, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 10 },
-  headerTitle: { color: Colors.success, fontSize: 16, fontWeight: '800', fontFamily: 'monospace', letterSpacing: 1 },
-  headerSub:   { color: Colors.textLight, fontSize: 12, marginTop: 2, fontFamily: 'monospace' },
+  header: {
+    paddingTop: 8,
+    paddingBottom: 16,
+  },
+  headerTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: Colors.white,
+    marginBottom: 4,
+  },
+  headerSub: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.5)',
+  },
 
-  // summary
-  summaryRow:  { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingVertical: 10, backgroundColor: Colors.textDark },
-  summaryCard: { flex: 1, backgroundColor: '#1E293B', borderRadius: 10, padding: 12, borderWidth: 1, borderColor: Colors.success + '44' },
-  summaryLabel:{ color: Colors.textLight, fontSize: 10, fontFamily: 'monospace', letterSpacing: 0.5 },
-  summaryValue:{ color: Colors.success, fontSize: 18, fontWeight: '800', fontFamily: 'monospace', marginTop: 4 },
+  summaryRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  summaryCard: {
+    flex: 1,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  summaryLabel: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 13,
+    fontWeight: '500',
+    marginBottom: 6,
+  },
+  summaryValue: {
+    color: Colors.white,
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  summaryValueCash: {
+    color: Colors.warning,
+  },
 
-  // form
-  form:        { backgroundColor: '#1E293B', paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1, borderColor: Colors.success + '33' },
-  inputRow:    { flexDirection: 'row', gap: 10, marginBottom: 10 },
-  inputWrap:   { flex: 1 },
-  inputLabel:  { color: Colors.success, fontSize: 9, fontFamily: 'monospace', letterSpacing: 0.5, marginBottom: 4 },
-  input:       { backgroundColor: Colors.textDark, color: Colors.white, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16, fontFamily: 'monospace', borderWidth: 1, borderColor: Colors.success + '44' },
-  btn:         { backgroundColor: Colors.success, borderRadius: 10, paddingVertical: 12, alignItems: 'center' },
-  btnText:     { color: Colors.white, fontWeight: '800', fontSize: 14, fontFamily: 'monospace', letterSpacing: 1 },
+  formCard: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  formTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.white,
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.7)',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 16,
+    marginBottom: 14,
+    color: Colors.white,
+  },
+  btn: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginTop: 4,
+  },
+  btnGradient: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  btnDisabled: {
+    opacity: 0.65,
+  },
+  btnText: {
+    color: Colors.white,
+    fontWeight: '700',
+    fontSize: 16,
+  },
 
-  // list
-  list:        { backgroundColor: Colors.surface, paddingBottom: 40 },
-  empty:       { alignItems: 'center', marginTop: 60 },
-  emptyIcon:   { fontSize: 48, marginBottom: 12 },
-  emptyText:   { color: Colors.textLight, fontSize: 15, textAlign: 'center', lineHeight: 22 },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.white,
+    marginBottom: 12,
+  },
 
-  // month
-  monthHeader: { backgroundColor: Colors.textDark, paddingHorizontal: 16, paddingVertical: 6 },
-  monthText:   { color: Colors.success, fontSize: 11, fontFamily: 'monospace', fontWeight: '700', letterSpacing: 1 },
+  empty: {
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 16,
+  },
+  emptyIcon: { fontSize: 48, marginBottom: 10 },
+  emptyText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
 
-  // day
-  dayBlock:    { marginBottom: 2 },
-  dayHeader:   { backgroundColor: '#E2E8F0', paddingHorizontal: 16, paddingVertical: 8, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  dayText:     { color: Colors.textDark, fontSize: 11, fontWeight: '700', fontFamily: 'monospace' },
-  dayTotals:   { alignItems: 'flex-end', gap: 2 },
-  dayTotal:    { fontSize: 11, color: Colors.success, fontFamily: 'monospace', fontWeight: '600' },
+  monthLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.4)',
+    textTransform: 'capitalize',
+    marginBottom: 10,
+    marginTop: 8,
+  },
 
-  // entry
-  entryRow:    { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Colors.white, paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: 1, borderColor: Colors.border },
-  entryHour:   { color: Colors.textLight, fontSize: 13, fontFamily: 'monospace', width: 50 },
+  dayCard: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
+  },
+  dayHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.08)',
+  },
+  dayTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.white,
+    textTransform: 'capitalize',
+    flex: 1,
+    paddingRight: 8,
+  },
+  dayTotals: { alignItems: 'flex-end', gap: 2 },
+  dayTotalLine: { fontSize: 12, fontWeight: '600', color: Colors.success },
+  dayTotalCash: { fontSize: 12, fontWeight: '600', color: Colors.warning },
+
+  entryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.08)',
+  },
+  entryHour: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 13,
+    width: 56,
+    fontWeight: '500',
+  },
   entryValues: { flexDirection: 'row', gap: 16 },
-  entryVentas: { color: Colors.textDark, fontSize: 14, fontWeight: '700', fontFamily: 'monospace' },
-  entryCash:   { color: Colors.warning, fontSize: 13, fontFamily: 'monospace' },
+  entryVentas: {
+    color: Colors.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  entryCash: {
+    color: Colors.warning,
+    fontSize: 14,
+    fontWeight: '600',
+  },
 
-  hint:        { textAlign: 'center', color: Colors.textLight, fontSize: 11, marginTop: 20, fontFamily: 'monospace' },
+  hint: {
+    textAlign: 'center',
+    color: 'rgba(255,255,255,0.35)',
+    fontSize: 12,
+    marginTop: 16,
+    lineHeight: 18,
+  },
 });

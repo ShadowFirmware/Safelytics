@@ -7,8 +7,8 @@ export default function CustomerLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textLight,
-        tabBarStyle: { borderTopColor: Colors.border },
+        tabBarInactiveTintColor: 'rgba(255,255,255,0.4)',
+        tabBarStyle: { backgroundColor: '#0D0D0D', borderTopColor: 'rgba(255,255,255,0.1)' },
         headerShown: false,
       }}
     >

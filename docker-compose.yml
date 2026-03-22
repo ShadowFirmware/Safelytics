@@ -1,0 +1,40 @@
+# Desarrollo: MySQL + API sin instalar MSVC en Windows (requiere Docker Desktop).
+# Copia variables de ejemplo: las del servicio backend son solo para entorno local aislado.
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: devroot
+      MYSQL_DATABASE: safelytics
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pdevroot"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: mysql://root:devroot@mysql:3306/safelytics
+      JWT_SECRET: dev-jwt-cambiar-en-produccion
+      # 32 bytes en hex (64 caracteres); solo para desarrollo local en Docker
+      KEY_ENCRYPTION_SECRET: "0000000000000000000000000000000000000000000000000000000000000000"
+      STELLAR_NETWORK: testnet
+      STELLAR_HORIZON_URL: https://horizon-testnet.stellar.org
+      STELLAR_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+      MXNE_ASSET_CODE: MXNe
+      MXNE_ISSUER: GBQXI2SY6TN6XUSVFJ6FX3YFQ7H6RJKYI5J65HIHJYKILN52H5XX57N
+      HOST: 0.0.0.0
+      PORT: "8080"
+      PLATFORM_FEE_BPS: "50"
+      REFERENCE_MXN_PER_USDC: "17.5"
+    depends_on:
+      mysql:
+        condition: service_healthy

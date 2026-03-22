@@ -1,7 +1,8 @@
 export const Colors = {
-  primary:   '#2563EB',
-  primaryDark: '#1D4ED8',
-  success:   '#10B981',
+  primary:     '#04B5FB',
+  primaryDark: '#0929F6',
+  success:     '#862FFF',
+  successDark: '#1E0B99',
   error:     '#EF4444',
   warning:   '#F59E0B',
   textDark:  '#0F172A',
@@ -11,3 +12,8 @@ export const Colors = {
   white:     '#FFFFFF',
   black:     '#000000',
 } as const;
+
+export const Gradients = {
+  blue:   ['#04B5FB', '#0929F6'] as const,
+  purple: ['#862FFF', '#1E0B99'] as const,
+};

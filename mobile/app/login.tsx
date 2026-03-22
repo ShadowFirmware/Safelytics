@@ -1,14 +1,15 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  ActivityIndicator, Alert, KeyboardAvoidingView,
+  ActivityIndicator, Alert, Image, KeyboardAvoidingView,
   Platform, Pressable, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../src/context/AuthContext';
 import { ApiError, api } from '../src/services/api';
 import { log } from '../src/utils/logger';
-import { Colors } from '../src/theme/colors';
+import { Colors, Gradients } from '../src/theme/colors';
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -45,27 +46,34 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.header}>
-        <View style={styles.logoBox}>
-          <Text style={styles.logoIcon}>⚡</Text>
-        </View>
-        <Text style={styles.title}>Bríjex</Text>
+        <Image
+          source={require('../assets/logo.png')}
+          style={styles.logoBox}
+          resizeMode="contain"
+        />
         <Text style={styles.subtitle}>Pagos con QR para tu negocio · inicia sesión</Text>
       </View>
 
       {/* Role toggle */}
       <View style={styles.toggle}>
         <Pressable
-          style={[styles.toggleTab, !isMerchant && styles.toggleTabActive]}
+          style={styles.toggleTab}
           onPress={() => setIsMerchant(false)}
         >
+          {!isMerchant && (
+            <LinearGradient colors={Gradients.blue} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} />
+          )}
           <Text style={[styles.toggleText, !isMerchant && styles.toggleTextActive]}>
             Cliente
           </Text>
         </Pressable>
         <Pressable
-          style={[styles.toggleTab, isMerchant && styles.toggleTabActive]}
+          style={styles.toggleTab}
           onPress={() => setIsMerchant(true)}
         >
+          {isMerchant && (
+            <LinearGradient colors={Gradients.blue} style={StyleSheet.absoluteFill} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} />
+          )}
           <Text style={[styles.toggleText, isMerchant && styles.toggleTextActive]}>
             Comercio
           </Text>
@@ -75,7 +83,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Teléfono (+5255...)"
-        placeholderTextColor={Colors.textLight}
+        placeholderTextColor="rgba(255,255,255,0.35)"
         keyboardType="phone-pad"
         autoCapitalize="none"
         value={phone}
@@ -84,7 +92,7 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
-        placeholderTextColor={Colors.textLight}
+        placeholderTextColor="rgba(255,255,255,0.35)"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -92,9 +100,11 @@ export default function LoginScreen() {
       />
 
       <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
-        {loading
-          ? <ActivityIndicator color={Colors.white} />
-          : <Text style={styles.btnText}>Entrar</Text>}
+        <LinearGradient colors={Gradients.blue} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+          {loading
+            ? <ActivityIndicator color={Colors.white} />
+            : <Text style={styles.btnText}>Entrar</Text>}
+        </LinearGradient>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -107,19 +117,18 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.surface, padding: 24, justifyContent: 'center' },
+  container: { flex: 1, backgroundColor: Colors.black, padding: 24, justifyContent: 'center' },
   header:    { alignItems: 'center', marginBottom: 40 },
-  logoBox:   { width: 72, height: 72, borderRadius: 20, backgroundColor: Colors.primary, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  logoIcon:  { fontSize: 36 },
-  title:     { fontSize: 28, fontWeight: '800', color: Colors.textDark, marginBottom: 4 },
-  subtitle:  { fontSize: 15, color: Colors.textLight },
-  toggle:    { flexDirection: 'row', backgroundColor: Colors.white, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, marginBottom: 24, padding: 4 },
-  toggleTab: { flex: 1, paddingVertical: 10, borderRadius: 9, alignItems: 'center' },
-  toggleTabActive: { backgroundColor: Colors.primary },
-  toggleText: { fontWeight: '600', color: Colors.textLight },
+  logoBox:   { width: 180, height: 180, borderRadius: 36, marginBottom: 16, overflow: 'hidden' },
+  title:     { fontSize: 28, fontWeight: '800', color: Colors.white, marginBottom: 4 },
+  subtitle:  { fontSize: 15, color: 'rgba(255,255,255,0.5)' },
+  toggle:    { flexDirection: 'row', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', marginBottom: 24, padding: 4 },
+  toggleTab: { flex: 1, paddingVertical: 10, borderRadius: 9, alignItems: 'center', overflow: 'hidden' },
+  toggleText: { fontWeight: '600', color: 'rgba(255,255,255,0.5)' },
   toggleTextActive: { color: Colors.white },
-  input:     { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border, borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 14, color: Colors.textDark },
-  btn:       { backgroundColor: Colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8, marginBottom: 16 },
+  input:     { backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 14, color: Colors.white },
+  btn:       { borderRadius: 12, overflow: 'hidden', marginTop: 8, marginBottom: 16 },
+  btnGradient: { padding: 16, alignItems: 'center' },
   btnText:   { color: Colors.white, fontWeight: '700', fontSize: 16 },
   link:      { textAlign: 'center', color: Colors.primary, fontWeight: '600' },
 });

@@ -4,11 +4,12 @@ import {
   Platform, SafeAreaView, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import QRCode from 'react-native-qrcode-svg';
 import { useAuth } from '../../src/context/AuthContext';
 import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
-import { Colors } from '../../src/theme/colors';
+import { Colors, Gradients } from '../../src/theme/colors';
 
 const QR_SCHEME = 'safelytics://pay/';
 
@@ -66,7 +67,9 @@ export default function GenerateQrScreen() {
           </View>
 
           <TouchableOpacity style={styles.btn} onPress={reset}>
-            <Text style={styles.btnText}>+ Nuevo cobro</Text>
+            <LinearGradient colors={Gradients.blue} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              <Text style={styles.btnText}>+ Nuevo cobro</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -86,7 +89,7 @@ export default function GenerateQrScreen() {
           <TextInput
             style={styles.amountInput}
             placeholder="0.00"
-            placeholderTextColor={Colors.textLight}
+            placeholderTextColor="rgba(255,255,255,0.35)"
             keyboardType="decimal-pad"
             value={amount}
             onChangeText={setAmount}
@@ -97,7 +100,7 @@ export default function GenerateQrScreen() {
           <TextInput
             style={styles.descInput}
             placeholder="Concepto (opcional)"
-            placeholderTextColor={Colors.textLight}
+            placeholderTextColor="rgba(255,255,255,0.35)"
             autoCapitalize="sentences"
             value={desc}
             onChangeText={setDesc}
@@ -105,9 +108,11 @@ export default function GenerateQrScreen() {
           />
 
           <TouchableOpacity style={styles.btn} onPress={generate} disabled={loading}>
-            {loading
-              ? <ActivityIndicator color={Colors.white} />
-              : <Text style={styles.btnText}>Generar QR</Text>}
+            <LinearGradient colors={Gradients.blue} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              {loading
+                ? <ActivityIndicator color={Colors.white} />
+                : <Text style={styles.btnText}>Generar QR</Text>}
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -116,21 +121,22 @@ export default function GenerateQrScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:         { flex: 1, backgroundColor: Colors.surface },
+  safe:         { flex: 1, backgroundColor: Colors.black },
 
   form:         { flex: 1, padding: 24, justifyContent: 'center' },
-  formTitle:    { fontSize: 22, fontWeight: '800', color: Colors.textDark, marginBottom: 24, textAlign: 'center' },
-  amountInput:  { fontSize: 48, fontWeight: '800', textAlign: 'center', color: Colors.textDark, borderBottomWidth: 2, borderBottomColor: Colors.primary, paddingBottom: 8, marginBottom: 4 },
-  currencyHint: { textAlign: 'center', color: Colors.textLight, marginBottom: 24, fontSize: 14 },
-  descInput:    { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border, borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 24, color: Colors.textDark },
-  btn:          { backgroundColor: Colors.primary, borderRadius: 12, padding: 16, alignItems: 'center' },
+  formTitle:    { fontSize: 22, fontWeight: '800', color: Colors.white, marginBottom: 24, textAlign: 'center' },
+  amountInput:  { fontSize: 48, fontWeight: '800', textAlign: 'center', color: Colors.white, borderBottomWidth: 2, borderBottomColor: Colors.primary, paddingBottom: 8, marginBottom: 4 },
+  currencyHint: { textAlign: 'center', color: 'rgba(255,255,255,0.5)', marginBottom: 24, fontSize: 14 },
+  descInput:    { backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 24, color: Colors.white },
+  btn:          { borderRadius: 12, overflow: 'hidden' },
+  btnGradient:  { padding: 16, alignItems: 'center' },
   btnText:      { color: Colors.white, fontWeight: '700', fontSize: 16 },
 
   qrContainer:  { flex: 1, padding: 24, alignItems: 'center', justifyContent: 'center', gap: 16 },
-  qrAmount:     { fontSize: 36, fontWeight: '800', color: Colors.textDark },
-  qrDesc:       { color: Colors.textLight, fontSize: 14 },
-  qrBox:        { backgroundColor: Colors.white, borderRadius: 24, padding: 20, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 20, elevation: 4 },
+  qrAmount:     { fontSize: 36, fontWeight: '800', color: Colors.white },
+  qrDesc:       { color: 'rgba(255,255,255,0.5)', fontSize: 14 },
+  qrBox:        { backgroundColor: '#1A1A1A', borderRadius: 24, padding: 20, shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 20, elevation: 4 },
   activeBadge:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
   activeDot:    { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.success },
-  activeTxt:    { color: Colors.textLight, fontSize: 13 },
+  activeTxt:    { color: 'rgba(255,255,255,0.5)', fontSize: 13 },
 });

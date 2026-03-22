@@ -4,10 +4,11 @@ import {
   ActivityIndicator, FlatList, RefreshControl,
   SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../src/context/AuthContext';
 import { api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
-import { Colors } from '../../src/theme/colors';
+import { Colors, Gradients } from '../../src/theme/colors';
 
 type Balance = Awaited<ReturnType<typeof api.getMerchantBalance>>;
 type Tx      = Awaited<ReturnType<typeof api.getHistory>>[number];
@@ -61,17 +62,19 @@ export default function MerchantHome() {
             ListHeaderComponent={
               <>
                 {/* Balance card */}
-                <View style={styles.balanceCard}>
+                <LinearGradient colors={Gradients.purple} style={styles.balanceCard} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
                   <Text style={styles.balanceLabel}>Saldo MXNe</Text>
                   <Text style={styles.balanceAmount}>
                     {balance ? `MXN $${balance.mxne_balance.toFixed(2)}` : '—'}
                   </Text>
                   <Text style={styles.balanceSub}>Red Stellar · casi inmediato</Text>
-                </View>
+                </LinearGradient>
 
                 {/* Quick action */}
                 <TouchableOpacity style={styles.cobraBtn} onPress={() => router.push('/merchant/qr')}>
-                  <Text style={styles.cobraBtnText}>+ Generar cobro</Text>
+                  <LinearGradient colors={Gradients.blue} style={styles.cobraBtnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+                    <Text style={styles.cobraBtnText}>Generar cobro</Text>
+                  </LinearGradient>
                 </TouchableOpacity>
 
                 {recent.length > 0 && <Text style={styles.sectionTitle}>Cobros recientes</Text>}
@@ -102,30 +105,30 @@ export default function MerchantHome() {
 }
 
 const styles = StyleSheet.create({
-  safe:         { flex: 1, backgroundColor: Colors.surface },
-  center:       { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  safe:         { flex: 1, backgroundColor: Colors.black },
+  center:       { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.black },
   header:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 },
-  headerTitle:  { fontSize: 20, fontWeight: '800', color: Colors.textDark },
-  logoutIcon:   { fontSize: 22, color: Colors.textLight },
+  headerTitle:  { fontSize: 20, fontWeight: '800', color: Colors.white },
+  logoutIcon:   { fontSize: 22, color: 'rgba(255,255,255,0.5)' },
 
   balanceCard:  { borderRadius: 24, padding: 28,
-                  backgroundColor: Colors.success,
-                  shadowColor: Colors.success, shadowOpacity: 0.35, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 6, marginBottom: 14 },
+                  shadowColor: Colors.successDark, shadowOpacity: 0.35, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 6, marginBottom: 14 },
   balanceLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: '500', marginBottom: 4 },
   balanceAmount: { color: Colors.white, fontSize: 38, fontWeight: '800', letterSpacing: -1, marginBottom: 4 },
   balanceSub:   { color: 'rgba(255,255,255,0.65)', fontSize: 12 },
 
-  cobraBtn:     { backgroundColor: Colors.primary, borderRadius: 14, padding: 16, alignItems: 'center', marginBottom: 24 },
+  cobraBtn:         { borderRadius: 14, overflow: 'hidden', marginBottom: 24 },
+  cobraBtnGradient: { padding: 16, alignItems: 'center' },
   cobraBtnText: { color: Colors.white, fontWeight: '700', fontSize: 16 },
 
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.textDark, marginBottom: 4 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.white, marginBottom: 4 },
 
-  txCard:  { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: 14, padding: 14, gap: 12 },
+  txCard:  { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', borderRadius: 14, padding: 14, gap: 12 },
   txArrow: { fontSize: 20, color: Colors.success, fontWeight: '700' },
-  txAmount:{ fontSize: 16, fontWeight: '700', color: Colors.textDark },
-  txDate:  { fontSize: 12, color: Colors.textLight, marginTop: 2 },
+  txAmount:{ fontSize: 16, fontWeight: '700', color: Colors.white },
+  txDate:  { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
 
   empty:     { alignItems: 'center', marginTop: 40 },
   emptyIcon: { fontSize: 48, marginBottom: 10 },
-  emptyText: { color: Colors.textLight, fontSize: 16 },
+  emptyText: { color: 'rgba(255,255,255,0.5)', fontSize: 16 },
 });

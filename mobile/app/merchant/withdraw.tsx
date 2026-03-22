@@ -9,11 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../src/context/AuthContext';
 import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
-import { Colors } from '../../src/theme/colors';
+import { Colors, Gradients } from '../../src/theme/colors';
 
 export default function MerchantWithdrawScreen() {
   const { token } = useAuth();
@@ -79,11 +80,10 @@ export default function MerchantWithdrawScreen() {
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Retirar fondos</Text>
 
-        <Text style={styles.section}>On-chain (MXNe → otra wallet G...)</Text>
         <TextInput
           style={styles.input}
-          placeholder="Dirección destino G..."
-          placeholderTextColor={Colors.textLight}
+          placeholder="Dirección destino..."
+          placeholderTextColor="rgba(255,255,255,0.35)"
           autoCapitalize="none"
           value={dest}
           onChangeText={setDest}
@@ -91,23 +91,25 @@ export default function MerchantWithdrawScreen() {
         <TextInput
           style={styles.input}
           placeholder="Monto MXNe"
-          placeholderTextColor={Colors.textLight}
+          placeholderTextColor="rgba(255,255,255,0.35)"
           keyboardType="decimal-pad"
           value={amountStellar}
           onChangeText={setAmountStellar}
         />
         <TouchableOpacity style={styles.btn} onPress={sendStellar} disabled={loading}>
-          {loading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.btnText}>Enviar MXNe</Text>}
+          <LinearGradient colors={Gradients.purple} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            {loading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.btnText}>Enviar MXNe</Text>}
+          </LinearGradient>
         </TouchableOpacity>
 
-        <Text style={[styles.section, { marginTop: 28 }]}>Banco (solicitud — testnet simulado)</Text>
+        <Text style={[styles.section, { marginTop: 28 }]}>Banco</Text>
         <Text style={styles.hint}>
           Registra la solicitud en el servidor. En producción se conectaría a un anchor / SPEI.
         </Text>
         <TextInput
           style={styles.input}
           placeholder="Monto (referencia)"
-          placeholderTextColor={Colors.textLight}
+          placeholderTextColor="rgba(255,255,255,0.35)"
           keyboardType="decimal-pad"
           value={amountBank}
           onChangeText={setAmountBank}
@@ -115,12 +117,14 @@ export default function MerchantWithdrawScreen() {
         <TextInput
           style={styles.input}
           placeholder="CLABE / cuenta"
-          placeholderTextColor={Colors.textLight}
+          placeholderTextColor="rgba(255,255,255,0.35)"
           value={clabe}
           onChangeText={setClabe}
         />
         <TouchableOpacity style={styles.btnBank} onPress={requestBank} disabled={loading}>
-          <Text style={styles.btnText}>Registrar retiro bancario</Text>
+          <LinearGradient colors={Gradients.blue} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <Text style={styles.btnText}>Registrar retiro bancario</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -128,13 +132,14 @@ export default function MerchantWithdrawScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:    { flex: 1, backgroundColor: Colors.surface },
+  safe:    { flex: 1, backgroundColor: Colors.black },
   scroll:  { padding: 20, paddingBottom: 40 },
-  title:   { fontSize: 22, fontWeight: '800', color: Colors.textDark, marginBottom: 16 },
-  section: { fontSize: 15, fontWeight: '700', color: Colors.textDark, marginBottom: 8 },
-  hint:    { fontSize: 12, color: Colors.textLight, marginBottom: 12, lineHeight: 17 },
-  input:   { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border, borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 10, color: Colors.textDark },
-  btn:     { backgroundColor: Colors.success, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 4 },
-  btnBank: { backgroundColor: Colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 4 },
-  btnText: { color: Colors.white, fontWeight: '700', fontSize: 16 },
+  title:   { fontSize: 22, fontWeight: '800', color: Colors.white, marginBottom: 16 },
+  section: { fontSize: 15, fontWeight: '700', color: Colors.white, marginBottom: 8 },
+  hint:    { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 12, lineHeight: 17 },
+  input:   { backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: 14, fontSize: 15, marginBottom: 10, color: Colors.white },
+  btn:        { borderRadius: 12, overflow: 'hidden', marginTop: 4 },
+  btnBank:    { borderRadius: 12, overflow: 'hidden', marginTop: 4 },
+  btnGradient:{ padding: 16, alignItems: 'center' },
+  btnText:    { color: Colors.white, fontWeight: '700', fontSize: 16 },
 });

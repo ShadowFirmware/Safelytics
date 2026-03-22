@@ -4,10 +4,11 @@ import {
   ActivityIndicator, Alert, ScrollView,
   StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../src/context/AuthContext';
 import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
-import { Colors } from '../../src/theme/colors';
+import { Colors, Gradients } from '../../src/theme/colors';
 
 type Intent = Awaited<ReturnType<typeof api.getPaymentInfo>>;
 type Quote = Awaited<ReturnType<typeof api.getPaymentQuote>>;
@@ -76,9 +77,9 @@ export default function ConfirmScreen() {
   if (result) {
     return (
       <View style={styles.success}>
-        <View style={styles.checkCircle}>
+        <LinearGradient colors={Gradients.purple} style={styles.checkCircle} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <Text style={styles.checkIcon}>✓</Text>
-        </View>
+        </LinearGradient>
         <Text style={styles.successTitle}>¡Pago listo!</Text>
         <Text style={styles.successAmount}>MXN ${result.amount_mxn.toFixed(2)}</Text>
         <Text style={styles.successSub}>El comercio recibió tu pago en pesos.</Text>
@@ -91,7 +92,9 @@ export default function ConfirmScreen() {
         </View>
 
         <TouchableOpacity style={styles.btn} onPress={() => router.replace('/customer')}>
-          <Text style={styles.btnText}>Volver al inicio</Text>
+          <LinearGradient colors={Gradients.blue} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <Text style={styles.btnText}>Volver al inicio</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     );
@@ -152,9 +155,11 @@ export default function ConfirmScreen() {
       <View style={{ flex: 1 }} />
 
       <TouchableOpacity style={styles.btn} onPress={pay} disabled={paying}>
-        {paying
-          ? <ActivityIndicator color={Colors.white} />
-          : <Text style={styles.btnText}>Confirmar pago</Text>}
+        <LinearGradient colors={Gradients.blue} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+          {paying
+            ? <ActivityIndicator color={Colors.white} />
+            : <Text style={styles.btnText}>Confirmar pago</Text>}
+        </LinearGradient>
       </TouchableOpacity>
       <TouchableOpacity style={styles.cancelBtn} onPress={() => router.replace('/customer')}>
         <Text style={styles.cancelText}>Cancelar</Text>
@@ -164,42 +169,43 @@ export default function ConfirmScreen() {
 }
 
 const styles = StyleSheet.create({
-  center:        { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  container:     { flexGrow: 1, padding: 24, backgroundColor: Colors.surface },
+  center:        { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.black },
+  container:     { flexGrow: 1, padding: 24, backgroundColor: Colors.black },
 
-  amountCard:    { backgroundColor: Colors.white, borderRadius: 24, padding: 32, alignItems: 'center', marginBottom: 16, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 20, elevation: 3 },
-  currencyLabel: { fontSize: 14, color: Colors.textLight, fontWeight: '500', marginBottom: 4 },
-  amount:        { fontSize: 52, fontWeight: '800', color: Colors.textDark, letterSpacing: -2 },
-  description:   { marginTop: 8, color: Colors.textLight, fontSize: 14 },
+  amountCard:    { backgroundColor: '#1A1A1A', borderRadius: 24, padding: 32, alignItems: 'center', marginBottom: 16, shadowColor: '#000', shadowOpacity: 0.4, shadowRadius: 20, elevation: 3 },
+  currencyLabel: { fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: '500', marginBottom: 4 },
+  amount:        { fontSize: 52, fontWeight: '800', color: Colors.white, letterSpacing: -2 },
+  description:   { marginTop: 8, color: 'rgba(255,255,255,0.5)', fontSize: 14 },
 
-  merchantRow:   { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: 16, padding: 16, marginBottom: 16 },
-  merchantIcon:  { width: 44, height: 44, borderRadius: 12, backgroundColor: '#EEF2FF', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  merchantLabel: { fontSize: 12, color: Colors.textLight },
-  merchantName:  { fontSize: 16, fontWeight: '700', color: Colors.textDark },
+  merchantRow:   { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', borderRadius: 16, padding: 16, marginBottom: 16 },
+  merchantIcon:  { width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(255,255,255,0.08)', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  merchantLabel: { fontSize: 12, color: 'rgba(255,255,255,0.5)' },
+  merchantName:  { fontSize: 16, fontWeight: '700', color: Colors.white },
 
   badge:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
   dot:           { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.success, marginRight: 6 },
-  badgeText:     { fontSize: 12, color: Colors.textLight },
+  badgeText:     { fontSize: 12, color: 'rgba(255,255,255,0.5)' },
 
-  btn:           { backgroundColor: Colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 12 },
+  btn:           { borderRadius: 12, overflow: 'hidden', marginBottom: 12 },
+  btnGradient:   { padding: 16, alignItems: 'center' },
   btnText:       { color: Colors.white, fontWeight: '700', fontSize: 16 },
   cancelBtn:     { alignItems: 'center', padding: 12 },
   cancelText:    { color: Colors.textLight, fontSize: 15 },
 
   // Success
-  success:       { flex: 1, backgroundColor: Colors.surface, justifyContent: 'center', alignItems: 'center', padding: 32 },
-  checkCircle:   { width: 96, height: 96, borderRadius: 48, backgroundColor: Colors.success, justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
+  success:       { flex: 1, backgroundColor: Colors.black, justifyContent: 'center', alignItems: 'center', padding: 32 },
+  checkCircle:   { width: 96, height: 96, borderRadius: 48, justifyContent: 'center', alignItems: 'center', marginBottom: 24 },
   checkIcon:     { color: Colors.white, fontSize: 48, fontWeight: '800' },
-  successTitle:  { fontSize: 28, fontWeight: '800', color: Colors.textDark, marginBottom: 8 },
+  successTitle:  { fontSize: 28, fontWeight: '800', color: Colors.white, marginBottom: 8 },
   successAmount: { fontSize: 22, fontWeight: '700', color: Colors.success, marginBottom: 8 },
-  successSub:    { fontSize: 14, color: Colors.textLight, textAlign: 'center', marginBottom: 28, paddingHorizontal: 16 },
-  hashBox:       { backgroundColor: Colors.white, borderRadius: 12, padding: 16, width: '100%', marginBottom: 32 },
-  quoteCard:     { backgroundColor: Colors.white, borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: Colors.border },
-  quoteTitle:    { fontSize: 14, fontWeight: '700', color: Colors.textDark, marginBottom: 12 },
+  successSub:    { fontSize: 14, color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginBottom: 28, paddingHorizontal: 16 },
+  hashBox:       { backgroundColor: '#1A1A1A', borderRadius: 12, padding: 16, width: '100%', marginBottom: 32 },
+  quoteCard:     { backgroundColor: '#1A1A1A', borderRadius: 16, padding: 16, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  quoteTitle:    { fontSize: 14, fontWeight: '700', color: Colors.white, marginBottom: 12 },
   quoteRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  quoteK:        { fontSize: 13, color: Colors.textLight, flex: 1, paddingRight: 8 },
-  quoteV:        { fontSize: 13, fontWeight: '600', color: Colors.textDark },
-  quoteFoot:     { fontSize: 10, color: Colors.textLight, marginTop: 10, lineHeight: 14 },
-  hashLabel:     { fontSize: 12, color: Colors.textLight, marginBottom: 4 },
-  hashValue:     { fontFamily: 'monospace', fontSize: 13, color: Colors.textDark },
+  quoteK:        { fontSize: 13, color: 'rgba(255,255,255,0.5)', flex: 1, paddingRight: 8 },
+  quoteV:        { fontSize: 13, fontWeight: '600', color: Colors.white },
+  quoteFoot:     { fontSize: 10, color: 'rgba(255,255,255,0.35)', marginTop: 10, lineHeight: 14 },
+  hashLabel:     { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 4 },
+  hashValue:     { fontFamily: 'monospace', fontSize: 13, color: Colors.white },
 });

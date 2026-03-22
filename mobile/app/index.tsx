@@ -1,16 +1,17 @@
 import { Redirect } from 'expo-router';
-import { ActivityIndicator, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ActivityIndicator } from 'react-native';
 import { useAuth } from '../src/context/AuthContext';
-import { Colors } from '../src/theme/colors';
+import { Colors, Gradients } from '../src/theme/colors';
 
 export default function Index() {
   const { token, role, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primary }}>
+      <LinearGradient colors={Gradients.blue} style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator color={Colors.white} size="large" />
-      </View>
+      </LinearGradient>
     );
   }
 

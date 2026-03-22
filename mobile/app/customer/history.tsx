@@ -74,16 +74,16 @@ export default function CustomerHistory() {
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: Colors.surface },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  title:  { fontSize: 22, fontWeight: '800', color: Colors.textDark, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
+  safe:   { flex: 1, backgroundColor: Colors.black },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.black },
+  title:  { fontSize: 22, fontWeight: '800', color: Colors.white, paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
   list:   { padding: 16, gap: 8 },
-  card:   { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.white, borderRadius: 16, padding: 16, gap: 12 },
+  card:   { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', borderRadius: 16, padding: 16, gap: 12 },
   dot:    { width: 10, height: 10, borderRadius: 5 },
-  amount: { fontSize: 16, fontWeight: '700', color: Colors.textDark },
-  date:   { fontSize: 12, color: Colors.textLight, marginTop: 2 },
+  amount: { fontSize: 16, fontWeight: '700', color: Colors.white },
+  date:   { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
   status: { fontSize: 12, fontWeight: '600' },
   empty:  { alignItems: 'center', marginTop: 80 },
   emptyIcon: { fontSize: 48, marginBottom: 12 },
-  emptyText: { color: Colors.textLight, fontSize: 16 },
+  emptyText: { color: 'rgba(255,255,255,0.5)', fontSize: 16 },
 });

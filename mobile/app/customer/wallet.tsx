@@ -10,11 +10,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../src/context/AuthContext';
 import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
-import { Colors } from '../../src/theme/colors';
+import { Colors, Gradients } from '../../src/theme/colors';
 
 export default function CustomerWalletScreen() {
   const { token } = useAuth();
@@ -96,7 +97,7 @@ export default function CustomerWalletScreen() {
             <Text style={styles.balance}>{balance?.toFixed(2) ?? '—'}</Text>
           )}
 
-          <TouchableOpacity style={styles.btnSecondary} onPress={refresh} disabled={loading}>
+            <TouchableOpacity style={styles.btnSecondary} onPress={refresh} disabled={loading}>
             <Text style={styles.btnSecondaryText}>Actualizar saldo</Text>
           </TouchableOpacity>
         </View>
@@ -106,12 +107,14 @@ export default function CustomerWalletScreen() {
             style={styles.input}
             keyboardType="decimal-pad"
             placeholder="Monto MXNe"
-            placeholderTextColor={Colors.textLight}
+            placeholderTextColor="rgba(255,255,255,0.35)"
             value={faucetAmount}
             onChangeText={setFaucetAmount}
           />
           <TouchableOpacity style={styles.btnSmall} onPress={onFaucet} disabled={loading}>
-            <Text style={styles.btnText}>Recibir MXNe</Text>
+            <LinearGradient colors={Gradients.purple} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              <Text style={styles.btnText}>Recibir MXNe</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -120,19 +123,20 @@ export default function CustomerWalletScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe:   { flex: 1, backgroundColor: Colors.surface },
+  safe:   { flex: 1, backgroundColor: Colors.black },
   scroll: { padding: 20, paddingBottom: 40 },
-  title:  { fontSize: 22, fontWeight: '800', color: Colors.textDark, marginBottom: 6 },
-  sub:    { fontSize: 13, color: Colors.textLight, marginBottom: 20, lineHeight: 18 },
-  card:   { backgroundColor: Colors.white, borderRadius: 16, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: Colors.border },
-  label:  { fontSize: 13, color: Colors.textLight, marginBottom: 4 },
+  title:  { fontSize: 22, fontWeight: '800', color: Colors.white, marginBottom: 6 },
+  sub:    { fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 20, lineHeight: 18 },
+  card:   { backgroundColor: '#1A1A1A', borderRadius: 16, padding: 20, marginBottom: 16, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  label:  { fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 4 },
   balance:{ fontSize: 32, fontWeight: '800', color: Colors.primary, marginBottom: 8 },
-  pk:     { fontSize: 11, color: Colors.textLight, fontFamily: 'monospace', marginBottom: 12 },
-  btn:    { backgroundColor: Colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 12 },
+  pk:     { fontSize: 11, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace', marginBottom: 12 },
+  btn:    { borderRadius: 12, overflow: 'hidden', marginBottom: 12 },
+  btnGradient: { padding: 16, alignItems: 'center' },
   btnText:{ color: Colors.white, fontWeight: '700', fontSize: 15 },
   btnSecondary: { alignItems: 'center', paddingVertical: 8 },
   btnSecondaryText: { color: Colors.primary, fontWeight: '600' },
   row:    { gap: 10 },
-  input:  { backgroundColor: Colors.white, borderWidth: 1, borderColor: Colors.border, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 8, color: Colors.textDark },
-  btnSmall: { backgroundColor: Colors.success, borderRadius: 12, padding: 16, alignItems: 'center' },
+  input:  { backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 8, color: Colors.white },
+  btnSmall: { borderRadius: 12, overflow: 'hidden' },
 });

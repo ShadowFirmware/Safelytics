@@ -23,6 +23,7 @@ if (__DEV__ && Device.isDevice && BAD_PHYSICAL_URL) {
     '\n[PagaLoop] ⚠️ Teléfono físico detectado pero la API usa una URL de emulador/localhost.\n' +
       '   Crea mobile/.env con la IP de tu PC (misma red que el teléfono), ejemplo:\n' +
       '   EXPO_PUBLIC_API_URL=http://192.168.43.12:8080\n' +
+      '   (también puede ser 10.x.x.x u otra red local; debe coincidir con ipconfig en Windows).\n' +
       '   En Windows: ipconfig → IPv4 del adaptador Wi‑Fi (si el PC usa hotspot del móvil, es la IP que te da ese hotspot).\n' +
       '   Reinicia Metro (expo start -c) después de guardar .env.\n',
   );
