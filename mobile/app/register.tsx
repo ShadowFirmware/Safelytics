@@ -25,7 +25,7 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     if (password !== confirm) {
       log.action('Register', 'Validación fallida: contraseñas no coinciden');
-      Alert.alert('Error', 'Las contraseñas no coinciden');
+      Alert.alert('Contraseñas distintas', 'Las contraseñas que ingresaste no coinciden. Verifica e intenta de nuevo.');
       return;
     }
     setLoading(true);
@@ -43,7 +43,7 @@ export default function RegisterScreen() {
       router.replace(isMerchant ? '/merchant' : '/customer');
     } catch (e) {
       log.error('Register', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'Intenta de nuevo');
+      Alert.alert('No se pudo crear la cuenta', 'El número ya está registrado o hubo un error. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }

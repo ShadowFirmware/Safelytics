@@ -81,10 +81,7 @@ export default function BankTransferScreen() {
       );
       setResult(res);
     } catch (e) {
-      Alert.alert(
-        'Error',
-        e instanceof ApiError ? e.message : 'No se pudo realizar la transferencia.',
-      );
+      Alert.alert('Error al transferir', 'No se pudo enviar la transferencia. Verifica tu saldo e intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -134,9 +131,9 @@ export default function BankTransferScreen() {
                 </Text>
               </View>
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Tx Stellar</Text>
+                <Text style={styles.detailLabel}>Folio</Text>
                 <Text style={[styles.detailValue, styles.monoText]}>
-                  {result.stellar_tx_hash.slice(0, 20)}…
+                  {result.transfer_id.slice(0, 8).toUpperCase()}
                 </Text>
               </View>
             </View>
@@ -216,8 +213,7 @@ export default function BankTransferScreen() {
         <View style={styles.infoBox}>
           <Ionicons name="information-circle-outline" size={18} color={Colors.primary} />
           <Text style={styles.infoText}>
-            Tu saldo MXNe será deducido inmediatamente. El destinatario recibe el pago
-            vía SPEI en máx. 24 horas hábiles a través de OpenPay (BBVA).
+            Tu saldo se descontará de inmediato. El destinatario recibirá el dinero en su cuenta bancaria en máx. 24 horas hábiles.
           </Text>
         </View>
 

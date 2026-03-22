@@ -45,7 +45,7 @@ export default function ConfirmScreen() {
         if (cancelled) return;
         log.error('ConfirmarPago', e);
         const msg = e instanceof ApiError ? e.message : e instanceof Error ? e.message : 'Error';
-        Alert.alert('Error', msg, [{ text: 'OK', onPress: () => router.back() }]);
+        Alert.alert('No se pudo cargar', 'Este cobro no existe o ya expiró.', [{ text: 'Volver', onPress: () => router.back() }]);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -66,7 +66,7 @@ export default function ConfirmScreen() {
       setResult(res);
     } catch (e) {
       log.error('ConfirmarPago', e);
-      Alert.alert('Pago fallido', e instanceof ApiError ? e.message : 'Intenta de nuevo');
+      Alert.alert('Pago fallido', 'No se pudo procesar el pago. Verifica tu saldo e intenta de nuevo.');
     } finally {
       setPaying(false);
     }

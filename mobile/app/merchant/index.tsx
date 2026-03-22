@@ -46,11 +46,11 @@ export default function MerchantHome() {
   const onBootstrap = async () => {
     if (!token) return;
     try {
-      const r = await api.bootstrapTestnet(token);
-      Alert.alert('Wallet lista', r.message);
+      await api.bootstrapTestnet(token);
+      Alert.alert('¡Listo!', 'Tu cartera ya está activa y lista para recibir cobros.');
       load();
     } catch (e) {
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'Bootstrap falló');
+      Alert.alert('No se pudo activar', 'Hubo un problema al configurar tu cartera. Intenta de nuevo.');
     }
   };
 
@@ -114,7 +114,7 @@ export default function MerchantHome() {
                   <Text style={styles.txDate}>{tx.created_at.slice(0, 10)}</Text>
                 </View>
                 <Text style={{ color: tx.status === 'failed' ? Colors.error : Colors.success, fontWeight: '600', fontSize: 12 }}>
-                  {tx.status}
+                  {tx.status === 'failed' ? 'Cobro fallido' : tx.status === 'submitted' ? 'Cobro exitoso' : tx.status === 'pending' ? 'Pendiente' : 'Completado'}
                 </Text>
               </View>
             )}

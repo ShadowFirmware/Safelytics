@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../src/context/AuthContext';
-import { ApiError, api } from '../src/services/api';
+import { api } from '../src/services/api';
 import { log } from '../src/utils/logger';
 import { Colors, Gradients } from '../src/theme/colors';
 
@@ -34,7 +34,7 @@ export default function LoginScreen() {
       router.replace(isMerchant ? '/merchant' : '/customer');
     } catch (e) {
       log.error('Login', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'Intenta de nuevo');
+      Alert.alert('No pudimos iniciar sesión', 'Verifica tu número y contraseña e intenta de nuevo.');
     } finally {
       setLoading(false);
     }

@@ -13,7 +13,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../src/context/AuthContext';
-import { ApiError, api } from '../../src/services/api';
+import { api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors, Gradients } from '../../src/theme/colors';
 import { fmtMXN } from '../../src/utils/format';
@@ -34,7 +34,7 @@ export default function CustomerWalletScreen() {
       log.action('CarteraCliente', 'Saldo actualizado', { mxne: r.mxne_balance });
     } catch (e) {
       log.error('CarteraCliente', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'No se pudo cargar el saldo');
+      Alert.alert('Sin conexión', 'No pudimos obtener tu saldo. Verifica tu conexión e intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -50,12 +50,12 @@ export default function CustomerWalletScreen() {
     if (!token) return;
     setLoading(true);
     try {
-      const r = await api.bootstrapTestnet(token);
-      Alert.alert('Wallet lista', r.message);
+      await api.bootstrapTestnet(token);
+      Alert.alert('¡Listo!', 'Tu cartera ya está activa y lista para recibir pagos.');
       await refresh();
     } catch (e) {
       log.error('CarteraCliente', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'Bootstrap falló');
+      Alert.alert('No se pudo activar', 'Hubo un problema al configurar tu cartera. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -79,17 +79,17 @@ export default function CustomerWalletScreen() {
     if (!token) return;
     const n = parseFloat(faucetAmount.replace(',', '.'));
     if (!n || n <= 0) {
-      Alert.alert('Monto', 'Ingresa un monto válido');
+      Alert.alert('Monto inválido', 'Ingresa una cantidad mayor a 0.');
       return;
     }
     setLoading(true);
     try {
-      const r = await api.faucetMxne(n, token);
-      Alert.alert('MXNe recibido (testnet)', `Tx: ${r.stellar_tx_hash.slice(0, 20)}…`);
+      await api.faucetMxne(n, token);
+      Alert.alert('¡Recibido!', `Se acreditaron $${n.toFixed(2)} MXN a tu cartera.`);
       await refresh();
     } catch (e) {
       log.error('CarteraCliente', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'Faucet falló');
+      Alert.alert('Error al recargar', 'No se pudo acreditar el saldo. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }

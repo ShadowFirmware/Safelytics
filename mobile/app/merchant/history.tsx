@@ -66,15 +66,11 @@ export default function MerchantHistory() {
             <Ionicons name="arrow-down-outline" size={18} color={Colors.success} />
             <View style={{ flex: 1 }}>
               <Text style={styles.amount}>MXN ${fmtMXN(tx.amount_mxn)}</Text>
-              {tx.stellar_tx_hash && (
-                <Text style={styles.hash} numberOfLines={1}>
-                  {tx.stellar_tx_hash.slice(0, 16)}…
-                </Text>
-              )}
+              <Text style={styles.date}>{tx.created_at.slice(11, 16)} hrs</Text>
             </View>
             <View style={{ alignItems: 'flex-end' }}>
               <Text style={[styles.status, { color: tx.status === 'failed' ? Colors.error : Colors.success }]}>
-                {tx.status}
+                {tx.status === 'failed' ? 'Cobro fallido' : tx.status === 'submitted' ? 'Cobro exitoso' : tx.status === 'pending' ? 'Pendiente' : 'Completado'}
               </Text>
               <Text style={styles.date}>{tx.created_at.slice(0, 10)}</Text>
             </View>

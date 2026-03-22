@@ -28,23 +28,23 @@ export default function MerchantWithdrawScreen() {
     if (!token) return;
     const mxn = parseFloat(amountStellar.replace(',', '.'));
     if (!mxn || mxn <= 0) {
-      Alert.alert('Monto', 'Ingresa un monto válido');
+      Alert.alert('Monto inválido', 'Ingresa una cantidad mayor a 0.');
       return;
     }
     const d = dest.trim();
     if (!d.startsWith('G') || d.length < 50) {
-      Alert.alert('Destino', 'Debe ser una dirección Stellar pública (G...)');
+      Alert.alert('Dirección inválida', 'Ingresa una dirección Stellar válida (empieza con G).');
       return;
     }
     setLoading(true);
     log.action('RetiroComercio', 'Retiro Stellar', { amount_mxn: mxn });
     try {
-      const r = await api.withdrawStellar({ destination: d, amount_mxn: mxn }, token);
-      Alert.alert('Enviado', `Tx Stellar:\n${r.stellar_tx_hash}`);
+      await api.withdrawStellar({ destination: d, amount_mxn: mxn }, token);
+      Alert.alert('¡Enviado!', `Se transfirieron $${mxn.toFixed(2)} MXN a la dirección indicada.`);
       setAmountStellar('');
     } catch (e) {
       log.error('RetiroComercio', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'No se pudo enviar');
+      Alert.alert('Error al enviar', 'No se pudo completar la transferencia. Verifica los datos e intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -54,22 +54,22 @@ export default function MerchantWithdrawScreen() {
     if (!token) return;
     const mxn = parseFloat(amountBank.replace(',', '.'));
     if (!mxn || mxn <= 0) {
-      Alert.alert('Monto', 'Ingresa un monto válido');
+      Alert.alert('Monto inválido', 'Ingresa una cantidad mayor a 0.');
       return;
     }
     if (!clabe.trim()) {
-      Alert.alert('CLABE', 'Ingresa CLABE o cuenta');
+      Alert.alert('CLABE requerida', 'Ingresa la CLABE de la cuenta destino.');
       return;
     }
     setLoading(true);
     try {
-      const r = await api.withdrawBank({ amount_mxn: mxn, bank_account: clabe.trim() }, token);
-      Alert.alert('Solicitud registrada', `${r.message}\nID: ${r.withdrawal_id.slice(0, 8)}…`);
+      await api.withdrawBank({ amount_mxn: mxn, bank_account: clabe.trim() }, token);
+      Alert.alert('Solicitud enviada', `Tu retiro de $${mxn.toFixed(2)} MXN fue registrado y se procesará en breve.`);
       setAmountBank('');
       setClabe('');
     } catch (e) {
       log.error('RetiroComercio', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'No se pudo registrar');
+      Alert.alert('Error al retirar', 'No se pudo registrar tu solicitud. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ export default function MerchantWithdrawScreen() {
 
         <Text style={[styles.section, { marginTop: 28 }]}>Banco</Text>
         <Text style={styles.hint}>
-          Registra la solicitud en el servidor. En producción se conectaría a un anchor / SPEI.
+          El monto se procesará y se enviará a tu cuenta bancaria en los próximos días hábiles.
         </Text>
         <TextInput
           style={styles.input}

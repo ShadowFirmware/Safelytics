@@ -24,7 +24,7 @@ export default function GenerateQrScreen() {
   const generate = async () => {
     const mxn = parseFloat(amount.replace(',', '.'));
     if (!mxn || mxn <= 0) {
-      Alert.alert('Monto inválido', 'Ingresa un monto mayor a 0');
+      Alert.alert('Monto inválido', 'Ingresa un monto mayor a $0 para generar el cobro.');
       return;
     }
     if (!token) return;
@@ -36,7 +36,7 @@ export default function GenerateQrScreen() {
       setPaymentId(res.payment_id);
     } catch (e) {
       log.error('GenerarQR', e);
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'Intenta de nuevo');
+      Alert.alert('Error al generar QR', 'No se pudo crear el cobro. Verifica tu conexión e intenta de nuevo.');
     } finally {
       setLoading(false);
     }

@@ -48,7 +48,7 @@ export default function DepositScreen() {
       setDeposit(res);
       setDepositStatus('pending');
     } catch (e) {
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'No se pudo generar la CLABE');
+      Alert.alert('Error al generar', 'No se pudo crear tu referencia de pago. Verifica tu conexión e intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ export default function DepositScreen() {
       if (res.status === 'completed') {
         Alert.alert(
           '¡Recarga exitosa!',
-          `Se acreditaron ${fmtMXN(deposit.amount_mxn)} MXNe a tu cartera.\nTx: ${res.stellar_tx_hash?.slice(0, 20)}…`,
+          `Se acreditaron $${fmtMXN(deposit.amount_mxn)} MXN a tu cartera. Ya puedes usarlos.`,
         );
       } else if (res.status === 'failed') {
         Alert.alert('Recarga fallida', 'Hubo un error al acreditar. Contacta soporte.');
@@ -71,7 +71,7 @@ export default function DepositScreen() {
         Alert.alert('Pendiente', 'Aún no se detecta la transferencia. Intenta de nuevo en unos minutos.');
       }
     } catch (e) {
-      Alert.alert('Error', e instanceof ApiError ? e.message : 'Error al verificar');
+      Alert.alert('Error al verificar', 'No pudimos consultar el estado de tu recarga. Intenta de nuevo.');
     } finally {
       setChecking(false);
     }
@@ -197,7 +197,7 @@ export default function DepositScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.title}>Recargar saldo</Text>
         <Text style={styles.sub}>
-          Ingresa el monto que quieres agregar a tu cartera MXNe via transferencia SPEI (OpenPay / BBVA).
+          Ingresa el monto que quieres agregar a tu cartera. Te daremos los datos para hacer la transferencia desde tu banco.
         </Text>
 
         <View style={styles.card}>
@@ -250,8 +250,7 @@ export default function DepositScreen() {
         <View style={styles.infoBox}>
           <Ionicons name="shield-checkmark-outline" size={18} color={Colors.primary} />
           <Text style={styles.infoText}>
-            La CLABE es generada por OpenPay (BBVA). Tu saldo MXNe se acredita
-            automáticamente al detectar la transferencia.
+            Tu saldo se acredita automáticamente en minutos después de que tu banco envíe la transferencia.
           </Text>
         </View>
       </ScrollView>
