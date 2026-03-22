@@ -2,12 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, RefreshControl,
+  ActivityIndicator, Alert, FlatList, RefreshControl,
   SafeAreaView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../../src/context/AuthContext';
-import { api } from '../../src/services/api';
+import { ApiError, api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';
 import { Colors, Gradients } from '../../src/theme/colors';
 import { fmtMXN } from '../../src/utils/format';
@@ -43,6 +43,17 @@ export default function MerchantHome() {
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
+  const onBootstrap = async () => {
+    if (!token) return;
+    try {
+      const r = await api.bootstrapTestnet(token);
+      Alert.alert('Wallet lista', r.message);
+      load();
+    } catch (e) {
+      Alert.alert('Error', e instanceof ApiError ? e.message : 'Bootstrap falló');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safe}>
       {/* Header */}
@@ -71,6 +82,13 @@ export default function MerchantHome() {
                   </Text>
                   <Text style={styles.balanceSub}>Red Stellar · casi inmediato</Text>
                 </LinearGradient>
+
+                {/* Bootstrap */}
+                <TouchableOpacity style={styles.cobraBtn} onPress={onBootstrap}>
+                  <LinearGradient colors={Gradients.purple} style={styles.cobraBtnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+                    <Text style={styles.cobraBtnText}>Activar wallet (primera vez)</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
 
                 {/* Quick action */}
                 <TouchableOpacity style={styles.cobraBtn} onPress={() => router.push('/merchant/qr')}>

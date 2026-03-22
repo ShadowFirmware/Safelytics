@@ -2,8 +2,9 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator, FlatList, RefreshControl,
-  SafeAreaView, StyleSheet, Text, View,
+  StyleSheet, Text, View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../src/context/AuthContext';
 import { api } from '../../src/services/api';
 import { log } from '../../src/utils/logger';

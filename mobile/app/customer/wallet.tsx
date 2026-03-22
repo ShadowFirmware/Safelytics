@@ -22,7 +22,6 @@ export default function CustomerWalletScreen() {
   const { token, logout } = useAuth();
   const router = useRouter();
   const [balance, setBalance] = useState<number | null>(null);
-  const [pub, setPub] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [faucetAmount, setFaucetAmount] = useState('100');
 
@@ -32,7 +31,6 @@ export default function CustomerWalletScreen() {
     try {
       const r = await api.getWalletBalance(token);
       setBalance(r.mxne_balance);
-      setPub(r.public_key);
       log.action('CarteraCliente', 'Saldo actualizado', { mxne: r.mxne_balance });
     } catch (e) {
       log.error('CarteraCliente', e);
@@ -53,10 +51,7 @@ export default function CustomerWalletScreen() {
     setLoading(true);
     try {
       const r = await api.bootstrapTestnet(token);
-      Alert.alert(
-        'Testnet listo',
-        `${r.message}\n\nTrustline tx: ${r.change_trust_tx_hash.slice(0, 16)}…`,
-      );
+      Alert.alert('Wallet lista', r.message);
       await refresh();
     } catch (e) {
       log.error('CarteraCliente', e);
@@ -137,6 +132,12 @@ export default function CustomerWalletScreen() {
             <Text style={styles.btnSecondaryText}>Actualizar saldo</Text>
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity style={styles.btn} onPress={onBootstrap} disabled={loading}>
+          <LinearGradient colors={Gradients.blue} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+            <Text style={styles.btnText}>Activar wallet (primera vez)</Text>
+          </LinearGradient>
+        </TouchableOpacity>
 
         <View style={styles.row}>
           <TextInput
