@@ -1,4 +1,4 @@
-# PagaLoop (Safelytics)
+# Bríjex (Safelytics)
 
 Pagos con QR para negocios pequeños; backend en **Rust**, app en **Expo / React Native**, cadena **Stellar** (testnet en desarrollo).
 
