@@ -4,8 +4,9 @@
 use anyhow::{bail, Context, Result};
 use data_encoding::BASE32_NOPAD;
 
-const VERSION_ACCOUNT_ID: u8 = 6 << 3; // 'G' → 48
-const VERSION_SEED: u8 = 18 << 3; // 'S' → 144
+const VERSION_ACCOUNT_ID: u8 = 6 << 3;  // 'G' → 48
+const VERSION_SEED: u8       = 18 << 3; // 'S' → 144
+const VERSION_CONTRACT: u8   = 2 << 3;  // 'C' → 16
 
 // ---------- CRC-16 CCITT XModem ----------
 
@@ -69,6 +70,17 @@ pub fn decode_address(addr: &str) -> Result<[u8; 32]> {
 /// Encode 32 raw seed bytes as a Stellar secret (S...)
 pub fn encode_secret(seed: &[u8; 32]) -> String {
     encode(VERSION_SEED, seed)
+}
+
+/// Decode a C... contract address to 32 raw bytes
+pub fn decode_contract_address(addr: &str) -> Result<[u8; 32]> {
+    let bytes = decode(VERSION_CONTRACT, addr)?;
+    if bytes.len() != 32 {
+        bail!("contract address payload must be 32 bytes");
+    }
+    let mut out = [0u8; 32];
+    out.copy_from_slice(&bytes);
+    Ok(out)
 }
 
 /// Decode a S... secret to 32 raw seed bytes

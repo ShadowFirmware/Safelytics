@@ -1,4 +1,5 @@
 pub mod horizon;
+pub mod soroban;
 pub mod strkey;
 pub mod transaction;
 

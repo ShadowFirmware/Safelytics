@@ -28,6 +28,13 @@ pub struct Config {
     pub openpay_private_key: Option<String>,
     /// true = sandbox (pruebas), false = producción.
     pub openpay_sandbox: bool,
+    // ── Soroban ──────────────────────────────────────────────────────────────
+    /// URL del Soroban RPC (ej. https://soroban-testnet.stellar.org).
+    /// Vacío = usar pagos clásicos Stellar en lugar del contrato.
+    pub soroban_rpc_url: Option<String>,
+    /// Dirección C... del contrato PaymentRouter desplegado.
+    /// Si no está configurado, se usan pagos clásicos.
+    pub payment_router_contract_id: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -92,6 +99,12 @@ impl Config {
                 .unwrap_or_else(|_| "true".into())
                 .to_lowercase()
                 != "false",
+            soroban_rpc_url: std::env::var("SOROBAN_RPC_URL")
+                .ok()
+                .filter(|s| !s.is_empty()),
+            payment_router_contract_id: std::env::var("PAYMENT_ROUTER_CONTRACT_ID")
+                .ok()
+                .filter(|s| !s.is_empty()),
             stellar_network,
             encryption_key,
         })

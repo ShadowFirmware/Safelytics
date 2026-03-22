@@ -138,8 +138,39 @@ pub async fn send_payment(
     .execute(&state.db)
     .await?;
 
-    // ── Execute Stellar payment (split o pago único) ─────────────────────
-    let tx_result = if use_split {
+    // ── Execute Stellar payment ───────────────────────────────────────────
+    //
+    // Si el contrato PaymentRouter está configurado, lo usamos para un pago
+    // atómico on-chain con split de comisión en una sola tx Soroban.
+    // Si no, usamos los pagos clásicos de Stellar (1 o 2 ops).
+    let use_contract = state.config.payment_router_contract_id.is_some()
+        && state.config.soroban_rpc_url.is_some();
+
+    let tx_result = if use_contract {
+        let contract_id = state.config.payment_router_contract_id.as_deref().unwrap();
+        let rpc_url     = state.config.soroban_rpc_url.as_deref().unwrap();
+        let fee_recv    = platform_g.unwrap_or(merchant.stellar_public_key.as_str());
+
+        tracing::info!(
+            intent_id = %intent.id,
+            contract_id,
+            merchant_stroops = if use_split { merchant_net_stroops } else { total_stroops },
+            fee_stroops = if use_split { fee_stroops } else { 0 },
+            "Ejecutando pago via contrato Soroban"
+        );
+
+        stellar::soroban::execute_contract_payment(stellar::soroban::ContractPayment {
+            customer_encrypted_secret: &customer.stellar_secret_encrypted,
+            merchant_address: &merchant.stellar_public_key,
+            fee_receiver_address: fee_recv,
+            merchant_stroops: if use_split { merchant_net_stroops } else { total_stroops },
+            fee_stroops: if use_split { fee_stroops } else { 0 },
+            contract_id,
+            soroban_rpc_url: rpc_url,
+            config: &state.config,
+        })
+        .await
+    } else if use_split {
         stellar::execute_split_payment(stellar::SplitPaymentRequest {
             source_encrypted_secret: &customer.stellar_secret_encrypted,
             merchant_destination: &merchant.stellar_public_key,
